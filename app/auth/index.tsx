@@ -5,16 +5,27 @@ import Separator from "@/components/ui/separator";
 import { Link } from "expo-router";
 import { useState } from "react";
 import {
+  FlatList,
+  Image,
   KeyboardAvoidingView,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
+GoogleSignin.configure({
+  iosClientId:
+    "491718666551-0idqorsrddrqi82rt5e6q6ioonaeptid.apps.googleusercontent.com",
+});
 
 export default function Auth() {
   const [hideImageCarousel, setHideImageCarousel] = useState(false);
   const [email, setEmail] = useState("");
+  const [images, _] = useState([
+    require("@/assets/images/carousel/lee-priest.jpg"),
+    require("@/assets/images/carousel/arnold.jpeg"),
+    require("@/assets/images/carousel/chris-1.webp"),
+  ]);
 
   return (
     <EgoistView>
@@ -23,9 +34,28 @@ export default function Auth() {
         className="flex-1 w-11/12 mx-auto"
       >
         {!hideImageCarousel && (
-          <View className="w-[200px] bg-egoist-red h-[300px] mx-auto my-auto rounded-lg flex justify-center items-center">
-            <Text className="text-white ">Carousel of Images Here</Text>
-          </View>
+          // need to make this better because this sucks
+          <FlatList
+            className="w-[200px] mx-auto my-auto rounded-lg"
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={images}
+            renderItem={({ item, index }) => (
+              <View className="w-[200px] bg-egoist-red h-[300px] mx-auto my-auto rounded-lg flex justify-center items-center">
+                <Image
+                  key={index}
+                  className="rounded-lg"
+                  source={item}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+
+                    objectFit: "cover",
+                  }}
+                />
+              </View>
+            )}
+          ></FlatList>
         )}
 
         <View className="mt-auto mb-10 space-y-4">
@@ -56,7 +86,7 @@ export default function Auth() {
               />
             </View>
             <Button className="p-2" text="Sign In" />
-            <Link href="/auth/signup">
+            <Link href="/auth">
               <Text className="text-center text-egoist-white underline">
                 Create An Account
               </Text>
