@@ -14,8 +14,11 @@ import {
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 GoogleSignin.configure({
+  webClientId:
+    "491718666551-eo0utlq6sl7e92ahr9tnhmelv8e1c7b1.apps.googleusercontent.com",
   iosClientId:
     "491718666551-0idqorsrddrqi82rt5e6q6ioonaeptid.apps.googleusercontent.com",
+  offlineAccess: true,
 });
 
 export default function Auth() {
@@ -26,6 +29,34 @@ export default function Auth() {
     require("@/assets/images/carousel/arnold.jpeg"),
     require("@/assets/images/carousel/chris-1.webp"),
   ]);
+
+  const signInWithGoogle = async () => {
+    try {
+      // Check if your device supports Google Play
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+      // Get the user auth code
+      const { serverAuthCode } = await GoogleSignin.signIn();
+
+      if (serverAuthCode === null) {
+        throw new Error("Authorization code wasn't created.");
+      }
+
+      // validate and call to our backend
+      const endpoint = "http://172.18.1.125:5000/api/v1/auth/google";
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          Authorization: serverAuthCode,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      //   captureException(err);
+    }
+  };
 
   return (
     <EgoistView>
@@ -59,7 +90,7 @@ export default function Auth() {
         )}
 
         <View className="mt-auto mb-10 space-y-4">
-          <Button text="Sign in with Google" />
+          <Button onPress={signInWithGoogle} text="Sign in with Google" />
           <View className="flex flex-row items-center">
             <Separator />
             <Text className="text-egoist-white text-lg px-4">or</Text>
