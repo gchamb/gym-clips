@@ -18,6 +18,5 @@ web-build/
 
 expo-env.d.ts
 
-
-google-services
+.env.*
 # @end expo-cli
