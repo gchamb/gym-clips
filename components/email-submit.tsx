@@ -1,14 +1,15 @@
 import Button from "./ui/button";
 import Input from "./ui/input";
+import sanitizedConfig from "@/config";
 import { View, Text } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { Link, router } from "expo-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authFormSchema } from "@/types/schemas";
 import { AuthSchema } from "@/types";
-import sanitizedConfig from "@/config";
 import { authAtom } from "@/stores/auth";
-import { useAtom } from "jotai/react";
+import { useSetAtom } from "jotai/react";
+import { useState } from "react";
 
 type EmailSubmitProps = {
   type: "Sign in" | "Sign up";
@@ -30,11 +31,12 @@ export default function EmailSubmit(props: EmailSubmitProps) {
     },
     resolver: zodResolver(authFormSchema),
   });
-
-  const [_, setAuthTokens] = useAtom(authAtom);
+  const setAuthTokens = useSetAtom(authAtom);
+  const [loading, setLoading] = useState(false);
 
   const handleEmailFlow = async (fields: AuthSchema) => {
     try {
+      setLoading(true);
       // validate and call to our backend
       const formType = props.type.toLowerCase().split(" ").join("");
 
@@ -53,8 +55,6 @@ export default function EmailSubmit(props: EmailSubmitProps) {
         jwt_token: string;
       };
 
-      console.log(tokens);
-
       setAuthTokens(tokens);
 
       router.replace("/(tabs)/home");
@@ -63,6 +63,8 @@ export default function EmailSubmit(props: EmailSubmitProps) {
       setError("root", {
         message: err instanceof Error ? err.message : String(err),
       });
+    } finally {
+      setLoading(true);
     }
   };
 
@@ -134,6 +136,8 @@ export default function EmailSubmit(props: EmailSubmitProps) {
         className="p-2"
         text={props.type}
         onPress={handleSubmit(handleEmailFlow)}
+        disabled={loading}
+        isLoading={loading}
       />
       {props.type === "Sign in" ? (
         <Link href="/signup">

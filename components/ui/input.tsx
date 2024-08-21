@@ -16,13 +16,13 @@ export default function Input(props: MyTextInputProps) {
           if (ref === null) return;
           inputRef.current = ref;
         }}
-        className="border-egoist-white border h-full rounded-xl pl-4"
+        className="border-egoist-white border h-full rounded-xl pl-4 z-[10]"
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         {...props}
       />
       {!isFocused && props.currentValue.trim() === "" && (
-        <Text className="absolute text-egoist-white left-4 top-5 text-xl">
+        <Text className="absolute text-egoist-white z-[0] left-4 top-5 text-xl">
           {props.previewText}
         </Text>
       )}

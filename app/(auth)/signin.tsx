@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { useAtom } from "jotai/react";
+import { useSetAtom } from "jotai/react";
 import { authAtom } from "@/stores/auth";
 
 GoogleSignin.configure({
@@ -24,8 +24,6 @@ GoogleSignin.configure({
 });
 
 export default function Auth() {
-  const [error, setError] = useState("");
-
   const [hideImageCarousel, setHideImageCarousel] = useState(false);
   const [images, _] = useState([
     require("@/assets/images/carousel/lee-priest.jpg"),
@@ -33,7 +31,7 @@ export default function Auth() {
     require("@/assets/images/carousel/chris-1.webp"),
   ]);
 
-  const [authTokens, setAuthTokens] = useAtom(authAtom);
+  const setAuthTokens = useSetAtom(authAtom);
 
   const signInWithGoogle = async () => {
     try {
@@ -68,9 +66,8 @@ export default function Auth() {
       };
       setAuthTokens(tokens);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Unable to sign in with google."
-      );
+      // NOTE: capture error with sentry
+      console.log(err);
     }
   };
 
