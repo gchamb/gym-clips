@@ -39,6 +39,12 @@
         {
           "iosUrlScheme": "com.googleusercontent.apps.491718666551-0idqorsrddrqi82rt5e6q6ioonaeptid"
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share your progress pics."
+        }
       ]
     ],
     "experiments": {

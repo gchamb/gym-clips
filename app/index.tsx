@@ -8,8 +8,13 @@ import { View, Image } from "react-native";
 export default function LandingPage() {
   const authTokens = useAtomValue(authAtom);
 
-  if (authTokens) {
+  console.log(authTokens?.jwt_token);
+
+  if (authTokens?.is_onboarded) {
     return <Redirect href="/(tabs)/home" />;
+  }
+  if (authTokens?.is_onboarded === false) {
+    return <Redirect href="/(auth)/onboarding" />;
   }
 
   return (

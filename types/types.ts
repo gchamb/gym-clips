@@ -9,6 +9,7 @@ export type ENV = {
 export type AuthTokens = {
   refresh_token: string;
   jwt_token: string;
+  is_onboarded: boolean;
 } | null;
 
 export type AuthSchema = z.infer<typeof authFormSchema>;
