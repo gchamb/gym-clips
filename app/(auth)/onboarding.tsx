@@ -2,6 +2,7 @@ import PictureCapture from "@/components/picture-capture";
 import Button from "@/components/ui/button";
 import Dropdown from "@/components/ui/dropdown";
 import EgoistView from "@/components/ui/egoist-view";
+import sanitizedConfig from "@/config";
 import * as ExpoImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Text, View } from "react-native";
@@ -14,13 +15,47 @@ export default function Onboarding() {
   const [progressImage, setProgressImage] =
     useState<ExpoImagePicker.ImagePickerAsset | null>(null);
 
-  const completeOnboarding = () => {
+  const completeOnboarding = async () => {
     if (progressImage === null) {
       // toast the error
       return;
     }
 
     try {
+      // request for sas url
+      const sasResponse = await fetch(
+        `${sanitizedConfig.API_URL}/api/v1/azure/upload`
+      );
+
+      if (!sasResponse.ok) {
+        // throw some error
+      }
+      const sasData = (await sasResponse.json()) as {
+        key: string;
+        url: string;
+      };
+
+      // upload image
+      const sasUploadRes = await fetch(sasData.url, {
+        method: "PUT",
+        headers: {
+          "x-ms-blob-type": "BlockBlob",
+        },
+      });
+
+      if (!sasUploadRes.ok) {
+        // throw some error
+      }
+
+      // onboard the user
+      const onboardedRes = await fetch(
+        `${sanitizedConfig.API_URL}/api/user/onboard`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ key: sasData.key, currentWeight, goalWeight }),
+        }
+      );
+      // direct to the home screen
     } catch (err) {}
   };
 
