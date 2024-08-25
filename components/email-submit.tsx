@@ -65,7 +65,7 @@ export default function EmailSubmit(props: EmailSubmitProps) {
         message: err instanceof Error ? err.message : String(err),
       });
     } finally {
-      setLoading(true);
+      setLoading(false);
     }
   };
 
