@@ -6,9 +6,10 @@ import sanitizedConfig from "@/config";
 import * as ExpoImagePicker from "expo-image-picker";
 import { authAtom } from "@/stores/auth";
 import { router } from "expo-router";
-import { useAtomValue } from "jotai/react";
+import { useAtom } from "jotai/react";
 import { useState } from "react";
 import { Text, View } from "react-native";
+import { AuthTokens } from "@/types";
 
 const weights = Array.from({ length: 431 }, (_, i) => `${i + 70} lbs`);
 
@@ -17,7 +18,7 @@ export default function Onboarding() {
   const [currentWeight, setCurrentWeight] = useState<number>();
   const [progressImage, setProgressImage] =
     useState<ExpoImagePicker.ImagePickerAsset | null>(null);
-  const authTokens = useAtomValue(authAtom);
+  const [authTokens, setAuthTokens] = useAtom(authAtom);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -91,6 +92,14 @@ export default function Onboarding() {
       if (!onboardedRes.ok) {
         throw new Error("Unable to onboard user. Try Again.");
       }
+
+      const configuredTokens: AuthTokens = {
+        ...authTokens!,
+        is_onboarded: true,
+      };
+
+      setAuthTokens(configuredTokens);
+
       // direct to the home screen
       router.replace("/(tabs)/home");
     } catch (err) {
