@@ -14,6 +14,8 @@ import {
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useSetAtom } from "jotai/react";
 import { authAtom } from "@/stores/auth";
+import { router } from "expo-router";
+import { AuthTokens } from "@/types";
 
 GoogleSignin.configure({
   webClientId:
@@ -60,11 +62,15 @@ export default function Auth() {
         throw new Error("Unable to sign in with google.");
       }
 
-      const tokens = (await response.json()) as {
-        refresh_token: string;
-        jwt_token: string;
-      };
-      setAuthTokens(tokens);
+      const authRes = (await response.json()) as NonNullable<AuthTokens>;
+      console.log(authRes);
+      setAuthTokens(authRes);
+
+      if (authRes.is_onboarded) {
+        router.replace("/(tabs)/home");
+      } else {
+        router.replace("/(auth)/onboarding");
+      }
     } catch (err) {
       // NOTE: capture error with sentry
       console.log(err);

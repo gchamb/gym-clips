@@ -20,7 +20,7 @@ export default function Button(props: MyButtonProps) {
       <Text
         className={`text-white text-2xl font-bold ${
           props.isLoading && "text-slate-500"
-        }`}
+        } ${props.textClass}`}
       >
         {props.text}
       </Text>

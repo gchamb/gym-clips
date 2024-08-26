@@ -6,7 +6,7 @@ import { useForm, Controller } from "react-hook-form";
 import { Link, router } from "expo-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authFormSchema } from "@/types/schemas";
-import { AuthSchema } from "@/types";
+import { AuthSchema, AuthTokens } from "@/types";
 import { authAtom } from "@/stores/auth";
 import { useSetAtom } from "jotai/react";
 import { useState } from "react";
@@ -50,21 +50,22 @@ export default function EmailSubmit(props: EmailSubmitProps) {
         throw new Error("Invalid Email or Password");
       }
 
-      const tokens = (await response.json()) as {
-        refresh_token: string;
-        jwt_token: string;
-      };
+      const authRes = (await response.json()) as NonNullable<AuthTokens>;
 
-      setAuthTokens(tokens);
+      setAuthTokens(authRes);
 
-      router.replace("/(tabs)/home");
+      if (authRes.is_onboarded) {
+        router.replace("/(tabs)/home");
+      } else {
+        router.replace("/(auth)/onboarding");
+      }
     } catch (err) {
       console.log(err);
       setError("root", {
         message: err instanceof Error ? err.message : String(err),
       });
     } finally {
-      setLoading(true);
+      setLoading(false);
     }
   };
 
