@@ -17,7 +17,7 @@ export default function RootLayout() {
           name="(auth)/onboarding"
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="(tabs)/home" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         {/* <Stack.Screen name="+not-found" /> */}
       </Stack>
       <PortalHost />

@@ -67,7 +67,7 @@ export default function Auth() {
       setAuthTokens(authRes);
 
       if (authRes.is_onboarded) {
-        router.replace("/(tabs)/home");
+        router.replace("/home");
       } else {
         router.replace("/(auth)/onboarding");
       }
