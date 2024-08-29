@@ -3,21 +3,21 @@ import Button from "@/components/ui/button";
 import Dropdown from "@/components/ui/dropdown";
 import EgoistView from "@/components/ui/egoist-view";
 import sanitizedConfig from "@/config";
-import * as ExpoImagePicker from "expo-image-picker";
+import { ImagePickerAsset } from "expo-image-picker";
 import { authAtom } from "@/stores/auth";
 import { router } from "expo-router";
 import { useAtom } from "jotai/react";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { AuthTokens } from "@/types";
-
-const weights = Array.from({ length: 431 }, (_, i) => `${i + 70} lbs`);
+import { getAndUploadImage, weights } from "@/lib/helpers";
 
 export default function Onboarding() {
   const [goalWeight, setGoalWeight] = useState<number>();
   const [currentWeight, setCurrentWeight] = useState<number>();
-  const [progressImage, setProgressImage] =
-    useState<ExpoImagePicker.ImagePickerAsset | null>(null);
+  const [progressImage, setProgressImage] = useState<ImagePickerAsset | null>(
+    null
+  );
   const [authTokens, setAuthTokens] = useAtom(authAtom);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -38,40 +38,7 @@ export default function Onboarding() {
     try {
       setLoading(true);
 
-      // request for sas url
-      const sasResponse = await fetch(
-        `${sanitizedConfig.API_URL}/api/v1/azure/upload?mimetype=${progressImage.mimeType}`,
-        {
-          headers: {
-            Authorization: `Bearer ${authTokens?.jwt_token}`,
-          },
-        }
-      );
-
-      if (!sasResponse.ok) {
-        // throw some error
-        throw new Error("Unable to upload image. Try Again.");
-      }
-      const sasData = (await sasResponse.json()) as {
-        key: string;
-        url: string;
-      };
-
-      // upload image
-      const imageFetch = await fetch(progressImage.uri);
-      const image = await imageFetch.blob();
-
-      const sasUploadRes = await fetch(sasData.url, {
-        method: "PUT",
-        body: image,
-        headers: {
-          "x-ms-blob-type": "BlockBlob",
-        },
-      });
-
-      if (!sasUploadRes.ok) {
-        throw new Error("Unable to upload image. Try Again.");
-      }
+      const { key } = await getAndUploadImage(progressImage, authTokens);
 
       // onboard the user
       const onboardedRes = await fetch(
@@ -79,9 +46,9 @@ export default function Onboarding() {
         {
           method: "PATCH",
           body: JSON.stringify({
-            key: sasData.key,
             current_weight: currentWeight,
             goal_weight: goalWeight,
+            key,
           }),
           headers: {
             Authorization: `Bearer ${authTokens?.jwt_token}`,

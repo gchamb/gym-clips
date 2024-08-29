@@ -18,6 +18,14 @@ export default function RootLayout() {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="(others)/daily-entry"
+          options={{
+            headerTitle: "",
+            headerTransparent: true,
+            presentation: "containedModal",
+          }}
+        />
         {/* <Stack.Screen name="+not-found" /> */}
       </Stack>
       <PortalHost />

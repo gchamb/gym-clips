@@ -1,5 +1,6 @@
 import PictureCapture from "@/components/picture-capture";
 import EgoistView from "@/components/ui/egoist-view";
+import PlaceholderAd from "@/components/ui/placeholder-ad";
 import { ScrollView, Text, View } from "react-native";
 
 const d = ["July", "August", "September", "October", "Novemember"];
@@ -31,7 +32,10 @@ export default function Home() {
             showsHorizontalScrollIndicator={false}
           >
             {d.map((value) => (
-              <View className="bg-white w-[150px] h-[150px] ml-4 flex justify-center items-center  rounded-lg">
+              <View
+                key={value}
+                className="bg-white w-[150px] h-[150px] ml-4 flex justify-center items-center  rounded-lg"
+              >
                 <Text className="text-lg font-bold">{value}</Text>
               </View>
             ))}
@@ -39,9 +43,7 @@ export default function Home() {
         </View>
       </View>
 
-      <View className="absolute h-[75px] bottom-0 left-0 right-0 bg-white flex justify-center items-center">
-        <Text className="text-lg font-bold">Placeholder Ad</Text>
-      </View>
+      <PlaceholderAd />
     </EgoistView>
   );
 }

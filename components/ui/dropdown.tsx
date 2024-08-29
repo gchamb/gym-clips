@@ -28,7 +28,7 @@ export default function Dropdown({
       <SelectPrimitive.Portal>
         <SelectPrimitive.Overlay style={StyleSheet.absoluteFill}>
           <SelectPrimitive.Content className="bg-black w-full text-white w-11/12 mx-auto p-2 rounded-xl mt-2 dark:bg-white dark:text-black">
-            <SelectPrimitive.Group className="max-h-[200px]">
+            <SelectPrimitive.Group className="max-h-[200px] z-[50]">
               <ScrollView>
                 {items.map((item, idx) => {
                   return (
