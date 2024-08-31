@@ -1,7 +1,9 @@
 import * as ExpoImagePicker from "expo-image-picker";
+import Button from "./ui/button";
 import { useState } from "react";
 import { View, Image, Pressable } from "react-native";
-import Button from "./ui/button";
+import { router } from "expo-router";
+import { Skeleton } from "@rneui/themed";
 
 // ik ik just makes it easier for my brain
 function Cross() {
@@ -14,12 +16,20 @@ function Cross() {
 }
 
 export default function PictureCapture(props: {
-  liftImage: (image: ExpoImagePicker.ImagePickerAsset) => void;
+  liftImage?: (image: ExpoImagePicker.ImagePickerAsset) => void;
+  default?: string;
+  openDailyEntry?: boolean;
+  showOnlySkeleton?: boolean;
 }) {
   const [selectedAsset, setSelectedAsset] =
     useState<ExpoImagePicker.ImagePickerAsset | null>(null);
 
   const pickImage = async () => {
+    if (props?.openDailyEntry) {
+      router.push("/daily-entry");
+      return;
+    }
+
     try {
       const cameraPermissions =
         await ExpoImagePicker.requestCameraPermissionsAsync();
@@ -39,15 +49,26 @@ export default function PictureCapture(props: {
 
       setSelectedAsset(result.assets[0]);
 
-      props.liftImage(result.assets[0]);
+      props.liftImage?.(result.assets[0]);
     } catch (err) {
       console.log(err);
     }
   };
 
+  if (props.showOnlySkeleton) {
+    return (
+      <Skeleton
+        height="100%"
+        width={200}
+        animation="pulse"
+        style={{ borderRadius: 15 }}
+      />
+    );
+  }
+
   return (
     <>
-      {selectedAsset === null ? (
+      {selectedAsset === null && props.default === undefined ? (
         <View className="border-4 border-white h-full max-h-[300px] w-[200px] mx-auto rounded-xl">
           <View className="w-full h-full relative flex">
             <View className="absolute w-full h-full z-[10]">
@@ -69,16 +90,17 @@ export default function PictureCapture(props: {
           <View className="h-full max-h-[300px] w-[200px] mx-auto ">
             <Image
               className="w-full h-full object-cover rounded-xl"
-              source={{ uri: selectedAsset.uri }}
+              source={{ uri: props.default ?? selectedAsset?.uri }}
             />
           </View>
-
-          <Button
-            className="bg-transparent p-0"
-            textClass="text-lg"
-            text="Try Again"
-            onPress={pickImage}
-          />
+          {props.default === undefined && (
+            <Button
+              className="bg-transparent p-0"
+              textClass="text-lg"
+              text="Try Again"
+              onPress={pickImage}
+            />
+          )}
         </View>
       )}
     </>
