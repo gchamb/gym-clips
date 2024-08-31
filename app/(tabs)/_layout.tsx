@@ -67,6 +67,7 @@ export default function TabsLayout() {
               />
             );
           },
+          unmountOnBlur: true,
         }}
       />
       <Tabs.Screen
