@@ -53,6 +53,38 @@ export default function TabsLayout() {
           },
         }}
       />
+      <Tabs.Screen
+        name="entry"
+        options={{
+          headerTitle: "",
+          headerTransparent: true,
+          tabBarIcon: ({ focused }) => {
+            return (
+              <Feather
+                size={28}
+                name="plus"
+                color={`${focused ? "white" : "#64748b"}`}
+              />
+            );
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          headerTitle: "",
+          headerTransparent: true,
+          tabBarIcon: ({ focused }) => {
+            return (
+              <Feather
+                size={28}
+                name="settings"
+                color={`${focused ? "white" : "#64748b"}`}
+              />
+            );
+          },
+        }}
+      />
     </Tabs>
   );
 }
