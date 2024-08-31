@@ -6,3 +6,17 @@ export const authFormSchema = z.object({
     message: "Password must be at least 7 characters",
   }),
 });
+
+export const progressEntrySchema = z.object({
+  id: z.string().uuid(),
+  azureBlobKey: z.string(),
+  currentWeight: z.number(),
+  createdAt: z.string(),
+});
+
+export const progressVideoSchema = z.object({
+  id: z.string().uuid(),
+  azureBlobKey: z.string(),
+  frequency: z.union([z.literal("monthly"), z.literal("weekly")]),
+  createdAt: z.string(),
+});
