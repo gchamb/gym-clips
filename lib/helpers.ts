@@ -70,3 +70,12 @@ export async function getAndUploadImage(
 
   return sasData;
 }
+
+export function formatDate(date: string) {
+  // YYYY-MM-DD
+  const splitDate = date.split("T")[0].split("-");
+
+  const month = Months[parseInt(splitDate[1]) - 1];
+
+  return `${month} ${splitDate[2]}, ${splitDate[0]}`;
+}
