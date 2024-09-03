@@ -48,6 +48,7 @@ export default function Onboarding() {
           body: JSON.stringify({
             current_weight: currentWeight,
             goal_weight: goalWeight,
+            tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
             key,
           }),
           headers: {
