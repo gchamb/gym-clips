@@ -5,7 +5,7 @@ import EgoistView from "@/components/ui/egoist-view";
 import sanitizedConfig from "@/config";
 import { ImagePickerAsset } from "expo-image-picker";
 import { authAtom } from "@/stores/auth";
-import { router } from "expo-router";
+import { Href, router } from "expo-router";
 import { useAtom } from "jotai/react";
 import { useState } from "react";
 import { Text, View } from "react-native";
@@ -68,7 +68,7 @@ export default function Onboarding() {
       setAuthTokens(configuredTokens);
 
       // direct to the home screen
-      router.replace("/(tabs)/home");
+      router.replace("/paywall?nextScreen=home" as Href<string>);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
