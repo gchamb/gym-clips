@@ -1,6 +1,7 @@
 import Button from "./ui/button";
 import Input from "./ui/input";
 import sanitizedConfig from "@/config";
+import Purchases from "react-native-purchases";
 import { View, Text } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { Link, router } from "expo-router";
@@ -53,6 +54,8 @@ export default function EmailSubmit(props: EmailSubmitProps) {
       const authRes = (await response.json()) as NonNullable<AuthTokens>;
 
       setAuthTokens(authRes);
+
+      await Purchases.logIn(authRes.uid);
 
       if (authRes.is_onboarded) {
         router.replace("/home");

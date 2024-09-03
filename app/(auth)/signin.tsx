@@ -16,6 +16,7 @@ import { useSetAtom } from "jotai/react";
 import { authAtom } from "@/stores/auth";
 import { router } from "expo-router";
 import { AuthTokens } from "@/types";
+import Purchases from "react-native-purchases";
 
 GoogleSignin.configure({
   webClientId:
@@ -63,8 +64,10 @@ export default function Auth() {
       }
 
       const authRes = (await response.json()) as NonNullable<AuthTokens>;
-      console.log(authRes);
+
       setAuthTokens(authRes);
+
+      await Purchases.logIn(authRes.uid);
 
       if (authRes.is_onboarded) {
         router.replace("/home");
