@@ -1,9 +1,10 @@
-import { ENV } from "./types";
+import { ENV, SantizedENV } from "./types";
 
-const getSanitzedConfig = (): NonNullable<ENV> => {
+const getSanitzedConfig = (): SantizedENV => {
   const env: ENV = {
     NODE_ENV: process.env.NODE_ENV,
     API_URL: process.env.EXPO_PUBLIC_API_URL,
+    REVENUE_CAT_KEY: process.env.EXPO_PUBLIC_REVENUE_CAT_KEY,
   };
 
   console.log(env);
@@ -14,7 +15,7 @@ const getSanitzedConfig = (): NonNullable<ENV> => {
     }
   }
 
-  return env as NonNullable<ENV>;
+  return env as SantizedENV;
 };
 
 const sanitizedConfig = getSanitzedConfig();
