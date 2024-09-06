@@ -9,14 +9,14 @@ export const authFormSchema = z.object({
 
 export const progressEntrySchema = z.object({
   id: z.string().uuid(),
-  azureBlobKey: z.string(),
+  blobKey: z.string(),
   currentWeight: z.number(),
   createdAt: z.string(),
 });
 
 export const progressVideoSchema = z.object({
   id: z.string().uuid(),
-  azureBlobKey: z.string(),
+  blobKey: z.string(),
   frequency: z.union([z.literal("monthly"), z.literal("weekly")]),
   createdAt: z.string(),
 });
