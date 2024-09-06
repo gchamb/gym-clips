@@ -44,7 +44,7 @@ export default function Home() {
         ...data.entries,
         {
           id: "placeholder",
-          azureBlobKey: "placeholder",
+          blobKey: "placeholder",
           createdAt: "placeholder",
           currentWeight: 0,
         },
@@ -100,7 +100,7 @@ export default function Home() {
                         {formatDate(item.createdAt)}
                       </Text>
                       <View>
-                        <PictureCapture default={item.azureBlobKey} />
+                        <PictureCapture default={item.blobKey} />
                       </View>
                     </View>
                   );

@@ -35,8 +35,8 @@ export async function getAndUploadImage(
   tokens: AuthTokens
 ) {
   // request for sas url
-  const sasResponse = await fetch(
-    `${sanitizedConfig.API_URL}/api/v1/azure/upload?mimetype=${image.mimeType}`,
+  const awsResponse = await fetch(
+    `${sanitizedConfig.API_URL}/api/v1/aws/upload?mimetype=${image.mimeType}`,
     {
       headers: {
         Authorization: `Bearer ${tokens?.jwt_token}`,
@@ -44,31 +44,32 @@ export async function getAndUploadImage(
     }
   );
 
-  if (!sasResponse.ok) {
+  if (!awsResponse.ok) {
     // throw some error
     throw new Error("Unable to upload image. Try Again.");
   }
-  const sasData = (await sasResponse.json()) as {
+  const awsData = (await awsResponse.json()) as {
     key: string;
     url: string;
+    headers: Record<string, string>;
   };
 
   const imageFetch = await fetch(image.uri);
   const imageBlob = await imageFetch.blob();
 
-  const sasUploadRes = await fetch(sasData.url, {
+  const awsUploadRes = await fetch(awsData.url, {
     method: "PUT",
     body: imageBlob,
     headers: {
-      "x-ms-blob-type": "BlockBlob",
+      ...awsData.headers,
     },
   });
 
-  if (!sasUploadRes.ok) {
+  if (!awsUploadRes.ok) {
     throw new Error("Unable to upload image. Try Again.");
   }
 
-  return sasData;
+  return awsData;
 }
 
 export function formatDate(date: string) {
