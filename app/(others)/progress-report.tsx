@@ -1,12 +1,26 @@
 import { View, Image, Text, Pressable } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { router } from "expo-router";
-import sanitizedConfig from "@/config";
-import { useAtomValue } from "jotai/react";
-import { authAtom } from "@/stores/auth";
+import { router, useLocalSearchParams } from "expo-router";
+import { Months } from "@/lib/helpers";
 
 export default function ProgressReport() {
-  const tokens = useAtomValue(authAtom);
+  const { last_weight, current_weight, frequency, created_at, report_id } =
+    useLocalSearchParams<{
+      report_id: string;
+      last_weight: string;
+      current_weight: string;
+      frequency: string;
+      created_at: string;
+    }>();
+
+  console.log(last_weight, current_weight, frequency, created_at, report_id);
+  const dateSplit = created_at.split("T")[0].split("-");
+  const month = Months[parseInt(dateSplit[1]) - 1];
+  const date =
+    frequency === "monthly"
+      ? `Month of ${month}`
+      : `Week of ${month} ${dateSplit[2]}`;
+
   return (
     <View className="flex-1 bg-egoist-black">
       <View className="w-11/12 mx-auto space-y-8">
@@ -20,7 +34,7 @@ export default function ProgressReport() {
           </View>
           {/* month of x or week  */}
           <Text className="text-2xl font-semibold text-egoist-white">
-            Week of August 8th
+            {date}
           </Text>
         </View>
 
@@ -39,7 +53,7 @@ export default function ProgressReport() {
               LAST WEEK
             </Text>
             <Text className="text-center font-bold text-egoist-white text-xl">
-              232 LBS
+              {last_weight} LBS
             </Text>
           </View>
           <View>
@@ -47,31 +61,15 @@ export default function ProgressReport() {
               THIS WEEK
             </Text>
             <Text className="text-center font-bold text-egoist-white text-xl">
-              232 LBS
+              {current_weight} LBS
             </Text>
           </View>
 
           <View className="ml-auto">
             <Pressable
               className="flex flex-row items-center space-x-4 active:scale-95"
-              onPress={async () => {
-                // send a request to show that you viewed
-                // const setViewedForReport = await fetch(
-                //   `${sanitizedConfig.API_URL}/api/v1/progress-report/view`,
-                //   {
-                //     method: "POST",
-                //     headers: {
-                //       Authorization: `Bearer ${tokens?.jwt_token}`,
-                //     },
-                //     body: JSON.stringify({ reportId: "", viewed: true }),
-                //   }
-                // );
-
-                if (router.canDismiss()) {
-                  router.dismiss();
-                } else {
-                  router.replace("/(tabs)/home");
-                }
+              onPress={() => {
+                router.replace("/(tabs)/home");
               }}
             >
               <Text className="text-white text-2xl font-bold">CONTINUE</Text>

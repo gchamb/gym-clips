@@ -6,13 +6,6 @@ import {
   ProgressVideo,
 } from "@/types";
 
-function wait(seconds: number) {
-  return new Promise((res, rej) => {
-    const ts = setTimeout(() => {
-      res(null);
-    }, seconds * 1000);
-  });
-}
 
 export async function getAssets(tokens: AuthTokens): Promise<{
   entries: ProgressEntry[];

@@ -80,3 +80,11 @@ export function formatDate(date: string) {
 
   return `${month} ${splitDate[2]}, ${splitDate[0]}`;
 }
+
+export function wait(seconds: number) {
+  return new Promise((res, rej) => {
+    const ts = setTimeout(() => {
+      res(null);
+    }, seconds * 1000);
+  });
+}

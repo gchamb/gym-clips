@@ -2,14 +2,14 @@ import PictureCapture from "@/components/picture-capture";
 import Carousel from "react-native-reanimated-carousel";
 import EgoistView from "@/components/ui/egoist-view";
 import PlaceholderAd from "@/components/ui/placeholder-ad";
-import getAssets, { getReport } from "@/lib/query-functions";
+import { getAssets } from "@/lib/query-functions";
 import { authAtom } from "@/stores/auth";
 import { useQuery } from "@tanstack/react-query";
 import { useAtomValue } from "jotai/react";
 import { useCallback } from "react";
 import { Dimensions, ScrollView, Text, View } from "react-native";
 import { formatDate } from "@/lib/helpers";
-import { Redirect, useFocusEffect } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import { ProgressEntry } from "@/types";
 
 const REMOVE_LATER_WHEN_VIDEOS_ARE_COMPLETED = [
@@ -25,14 +25,6 @@ export default function Home() {
   const { isLoading, data, refetch } = useQuery({
     queryKey: ["getAssets"],
     queryFn: () => getAssets(authTokens),
-  });
-  const {
-    isLoading: isLoadingReports,
-    data: reportData,
-    refetch: reportRefresh,
-  } = useQuery({
-    queryKey: ["getReport"],
-    queryFn: () => getReport(authTokens),
   });
 
   // derived and not that compute intensive (max 5 entries) so a rerender is on this fine
@@ -66,12 +58,6 @@ export default function Home() {
       refetch();
     }, [refetch])
   );
-
-  console.log(isLoadingReports, reportData);
-
-  if (true) {
-    // return  />;
-  }
 
   return (
     <EgoistView className="relative">
