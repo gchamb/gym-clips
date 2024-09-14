@@ -56,6 +56,14 @@ export default function RootLayout() {
               presentation: "containedModal",
             }}
           />
+          <Stack.Screen
+            name="(others)/progress-report"
+            options={{
+              headerTitle: "",
+              headerTransparent: true,
+              presentation: "containedModal",
+            }}
+          />
           {/* <Stack.Screen name="+not-found" /> */}
         </Stack>
         <PortalHost />

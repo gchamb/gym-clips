@@ -1,5 +1,10 @@
 import sanitizedConfig from "@/config";
-import { AuthTokens, ProgressEntry, ProgressVideo } from "@/types";
+import {
+  AuthTokens,
+  ProgressEntry,
+  ProgressReport,
+  ProgressVideo,
+} from "@/types";
 
 function wait(seconds: number) {
   return new Promise((res, rej) => {
@@ -9,7 +14,7 @@ function wait(seconds: number) {
   });
 }
 
-export default async function getAssets(tokens: AuthTokens): Promise<{
+export async function getAssets(tokens: AuthTokens): Promise<{
   entries: ProgressEntry[];
   videos: ProgressVideo[];
 }> {
@@ -27,10 +32,33 @@ export default async function getAssets(tokens: AuthTokens): Promise<{
     throw new Error("Unable to fetch assets.");
   }
 
-  await wait(5);
   const data = (await getAssetsResponse.json()) as {
     entries: ProgressEntry[];
     videos: ProgressVideo[];
+  };
+
+  return data;
+}
+
+export async function getReport(tokens: AuthTokens): Promise<{
+  report: ProgressReport;
+}> {
+  const getReportResponse = await fetch(
+    `${sanitizedConfig.API_URL}/api/v1/progress-report/view`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${tokens?.jwt_token}`,
+      },
+    }
+  );
+
+  if (!getReportResponse.ok) {
+    throw new Error("Unable to fetch progress report.");
+  }
+
+  const data = (await getReportResponse.json()) as {
+    report: ProgressReport;
   };
 
   return data;

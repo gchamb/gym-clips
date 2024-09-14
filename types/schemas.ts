@@ -20,3 +20,12 @@ export const progressVideoSchema = z.object({
   frequency: z.union([z.literal("monthly"), z.literal("weekly")]),
   createdAt: z.string(),
 });
+
+export const progressReportSchema = z.object({
+  id: z.string().uuid(),
+  currentWeight: z.number(),
+  lastWeight: z.number(),
+  viewed: z.boolean(),
+  frequency: z.union([z.literal("monthly"), z.literal("weekly")]),
+  createdAt: z.string(),
+});

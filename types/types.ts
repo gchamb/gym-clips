@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   authFormSchema,
   progressEntrySchema,
+  progressReportSchema,
   progressVideoSchema,
 } from "./schemas";
 
@@ -29,3 +30,5 @@ export type AuthSchema = z.infer<typeof authFormSchema>;
 export type ProgressEntry = z.infer<typeof progressEntrySchema>;
 
 export type ProgressVideo = z.infer<typeof progressVideoSchema>;
+
+export type ProgressReport = z.infer<typeof progressReportSchema>;
