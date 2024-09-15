@@ -1,20 +1,22 @@
 import sanitizedConfig from "@/config";
 import { AuthTokens, ProgressEntry, ProgressVideo } from "@/types";
 
-function wait(seconds: number) {
-  return new Promise((res, rej) => {
-    const ts = setTimeout(() => {
-      res(null);
-    }, seconds * 1000);
-  });
-}
-
-export default async function getAssets(tokens: AuthTokens): Promise<{
+export async function getAssets(
+  tokens: AuthTokens,
+  opts = {
+    type: ["progress-entry", "progress-video"],
+    frequency: "monthly",
+    take: 5,
+    page: 1,
+  }
+): Promise<{
   entries: ProgressEntry[];
   videos: ProgressVideo[];
 }> {
   const getAssetsResponse = await fetch(
-    `${sanitizedConfig.API_URL}/api/v1/assets?type=progress-entry,progress-video&frequency=monthly&take=5`,
+    `${sanitizedConfig.API_URL}/api/v1/assets?type=${opts.type.join(
+      ","
+    )}&frequency=${opts.frequency}&take=${opts.take}&page=${opts.page}`,
     {
       method: "GET",
       headers: {
@@ -27,7 +29,6 @@ export default async function getAssets(tokens: AuthTokens): Promise<{
     throw new Error("Unable to fetch assets.");
   }
 
-  await wait(5);
   const data = (await getAssetsResponse.json()) as {
     entries: ProgressEntry[];
     videos: ProgressVideo[];
