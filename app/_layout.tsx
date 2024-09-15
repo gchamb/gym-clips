@@ -56,6 +56,15 @@ export default function RootLayout() {
               presentation: "containedModal",
             }}
           />
+          <Stack.Screen
+            name="(others)/show-all-assets"
+            options={{
+              headerTitle: "",
+              headerTransparent: true,
+              presentation: "modal",
+              headerShown: true,
+            }}
+          />
           {/* <Stack.Screen name="+not-found" /> */}
         </Stack>
         <PortalHost />
