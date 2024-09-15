@@ -2,23 +2,18 @@ import PictureCapture from "@/components/picture-capture";
 import Carousel from "react-native-reanimated-carousel";
 import EgoistView from "@/components/ui/egoist-view";
 import PlaceholderAd from "@/components/ui/placeholder-ad";
-import getAssets from "@/lib/query-functions";
+import VideoPreview from "@/components/video-preview";
+import AssetModal from "@/components/show-asset-modal";
+
+import { getAssets } from "@/lib/query-functions";
 import { authAtom } from "@/stores/auth";
 import { useQuery } from "@tanstack/react-query";
 import { useAtomValue } from "jotai/react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Dimensions, ScrollView, Text, View } from "react-native";
 import { formatDate } from "@/lib/helpers";
-import { useFocusEffect } from "expo-router";
-import { ProgressEntry } from "@/types";
-
-const REMOVE_LATER_WHEN_VIDEOS_ARE_COMPLETED = [
-  "July",
-  "August",
-  "September",
-  "October",
-  "Novemember",
-];
+import { Link, useFocusEffect } from "expo-router";
+import { ProgressEntry, ProgressVideo } from "@/types";
 
 export default function Home() {
   const authTokens = useAtomValue(authAtom);
@@ -26,6 +21,8 @@ export default function Home() {
     queryKey: ["getAssets"],
     queryFn: () => getAssets(authTokens),
   });
+  const [showVideoPreview, setShowVideoPreview] =
+    useState<ProgressVideo | null>(null);
 
   // derived and not that compute intensive (max 5 entries) so a rerender is on this fine
   const getTodaysEntryIndex = data?.entries.findIndex((entry, idx) => {
@@ -59,19 +56,27 @@ export default function Home() {
     }, [refetch])
   );
 
-  console.log(isLoading, data);
-
   return (
     <EgoistView className="relative">
+      {showVideoPreview !== null && (
+        <AssetModal
+          assetType="video"
+          asset={showVideoPreview}
+          onPress={() => setShowVideoPreview(null)}
+        />
+      )}
       <View className="flex-1 mt-10 space-y-8">
         <View className="space-y-4">
           <View>
             <Text className="text-egoist-white text-lg text-center">
               Daily Progress
             </Text>
-            <Text className="text-egoist-red text-sm text-center">
+            <Link
+              href="/(others)/show-all-assets?type=progress-entry"
+              className="text-egoist-red text-sm text-center"
+            >
               Show All
-            </Text>
+            </Link>
           </View>
 
           <View className="h-[300px] w-[200px] mx-auto flex justify-center items-center">
@@ -114,20 +119,25 @@ export default function Home() {
           <Text className="text-egoist-white text-lg text-center">
             Progress Videos
           </Text>
-          <Text className="text-egoist-red text-sm text-center">Show All</Text>
+          <Link
+            href="/(others)/show-all-assets?type=progress-video"
+            className="text-egoist-red text-sm text-center"
+          >
+            Show All
+          </Link>
 
           <ScrollView
             horizontal
             contentContainerStyle={{ marginTop: 10 }}
             showsHorizontalScrollIndicator={false}
           >
-            {REMOVE_LATER_WHEN_VIDEOS_ARE_COMPLETED.map((value) => (
-              <View
-                key={value}
-                className="bg-white w-[150px] h-[150px] ml-4 flex justify-center items-center  rounded-lg"
-              >
-                <Text className="text-lg font-bold">{value}</Text>
-              </View>
+            {data?.videos.map((item) => (
+              <VideoPreview
+                key={item.id}
+                item={item}
+                color="white"
+                onPress={() => setShowVideoPreview(item)}
+              />
             ))}
           </ScrollView>
         </View>
