@@ -5,6 +5,7 @@ import EmailSubmit from "@/components/email-submit";
 import sanitizedConfig from "@/config";
 import { useState } from "react";
 import {
+  Dimensions,
   FlatList,
   Image,
   KeyboardAvoidingView,
@@ -17,6 +18,7 @@ import { authAtom } from "@/stores/auth";
 import { router } from "expo-router";
 import { AuthTokens } from "@/types";
 import Purchases from "react-native-purchases";
+import Carousel from "react-native-reanimated-carousel";
 
 GoogleSignin.configure({
   webClientId:
@@ -87,28 +89,31 @@ export default function Auth() {
         className="flex-1 w-11/12 mx-auto"
       >
         {!hideImageCarousel && (
-          // need to make this better because this sucks
-          <FlatList
-            className="w-[200px] mx-auto my-auto rounded-lg"
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={images}
-            renderItem={({ item, index }) => (
-              <View className="w-[200px] bg-egoist-red h-[300px] mx-auto my-auto rounded-lg flex justify-center items-center">
-                <Image
-                  key={index}
-                  className="rounded-lg"
-                  source={item}
-                  style={{
-                    width: "100%",
-                    height: "100%",
+          <View className="mt-6">
+            <Carousel
+              width={Dimensions.get("screen").width}
+              height={300}
+              data={images}
+              scrollAnimationDuration={1000}
+              renderItem={({ item, index }) => {
+                return (
+                  <View className="w-[200px] bg-egoist-red h-[300px] mx-auto my-auto rounded-lg flex justify-center items-center">
+                    <Image
+                      key={index}
+                      className="rounded-lg"
+                      source={item}
+                      style={{
+                        width: "100%",
+                        height: "100%",
 
-                    objectFit: "cover",
-                  }}
-                />
-              </View>
-            )}
-          ></FlatList>
+                        objectFit: "cover",
+                      }}
+                    />
+                  </View>
+                );
+              }}
+            />
+          </View>
         )}
 
         <View className="mt-auto mb-10 space-y-4">
