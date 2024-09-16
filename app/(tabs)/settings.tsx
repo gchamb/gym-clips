@@ -1,10 +1,231 @@
+import Button from "@/components/ui/button";
 import EgoistView from "@/components/ui/egoist-view";
-import { Text } from "react-native";
+import Input from "@/components/ui/input";
+import sanitizedConfig from "@/config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Purchases from "react-native-purchases";
+
+import { Feather } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
+import { router } from "expo-router";
+import { ActivityIndicator, Modal, Text, View } from "react-native";
+import { useAtom } from "jotai/react";
+import { authAtom } from "@/stores/auth";
+import { skusTiers } from "@/types";
+import { useState } from "react";
+import { BlurView } from "expo-blur";
 
 export default function Settings() {
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ["customerInfo"],
+    queryFn: () => Purchases.getCustomerInfo(),
+  });
+  const [authToken, setAuthAtom] = useAtom(authAtom);
+  const [goalWeight, setGoalWeight] = useState("");
+  const [openGoalWeightModal, setOpenGoalWeightModal] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const saveChangedGoalWeight = async () => {
+    if (goalWeight === "") {
+      setError("Must enter in a value");
+      return;
+    }
+
+    const castedGoalWeight = parseInt(goalWeight);
+    if (castedGoalWeight < 70 || castedGoalWeight > 500) {
+      setError("Invalid goal weight");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      if (error !== "") {
+        setError("");
+      }
+
+      const response = await fetch(
+        `${sanitizedConfig.API_URL}/api/v1/user/update`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ goal_weight: castedGoalWeight }),
+          headers: {
+            Authorization: `Bearer ${authToken?.jwt_token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Unable to save goal weight");
+      }
+
+      clearState();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Unable to save goal weight"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clearState = () => {
+    setGoalWeight("");
+    setOpenGoalWeightModal(false);
+    setError("");
+  };
+
+  if (isLoading || data === undefined) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator />
+      </View>
+    );
+  }
+  // data.activeSubscriptions = ["egoist_499_1m_lockedin"]; // for testing
+
   return (
     <EgoistView>
-      <Text className="text-2xl text-white">Placeholder</Text>
+      {openGoalWeightModal && (
+        <Modal transparent>
+          <BlurView className="flex-1">
+            <View className="bg-egoist-black w-11/12 h-1/3 m-auto rounded-2xl drop-shadow-2xl p-2 flex justify-evenly space-y-4">
+              <Text className="text-egoist-white text-3xl font-semibold text-center">
+                Goal Weight Change
+              </Text>
+              <View className="space-y-2">
+                {error !== "" && (
+                  <Text className="text-sm text-red-600 text-center">
+                    {error}
+                  </Text>
+                )}
+                <Input
+                  keyboardType="numeric"
+                  className="w-[100px] mx-auto text-center p-0 text-2xl text-egoist-white"
+                  currentValue={goalWeight}
+                  onChangeText={(text) => setGoalWeight(text)}
+                  placeholder="115"
+                />
+              </View>
+              <View className="space-y-2">
+                <Button
+                  className="p-2"
+                  text="Save"
+                  disabled={loading}
+                  isLoading={loading}
+                  onPress={saveChangedGoalWeight}
+                />
+                <Button
+                  className="p-2"
+                  text="Cancel"
+                  disabled={loading}
+                  onPress={() => clearState()}
+                />
+              </View>
+            </View>
+          </BlurView>
+        </Modal>
+      )}
+      <View className="w-11/12 mx-auto flex-1">
+        <View className="mt-8">
+          <Text className="text-4xl text-egoist-white font-semibold">Plan</Text>
+          {data.activeSubscriptions.length > 0 ? (
+            <View className="space-y-8">
+              {data.activeSubscriptions.map((sku, index) => {
+                if (index > 0) {
+                  return <></>;
+                }
+
+                return (
+                  <Text className="text-2xl text-egoist-red font-bold">
+                    {skusTiers[sku]}
+                  </Text>
+                );
+              })}
+              <View className="flex flex-row space-x-4">
+                <Feather name="check" color="#A91D3A" size={32} />
+                <Text className="text-egoist-white text-lg">
+                  Daily Progress Check In
+                </Text>
+              </View>
+              <View className="flex flex-row space-x-4">
+                <Feather name="check" color="#A91D3A" size={32} />
+                <Text className="text-egoist-white text-lg">
+                  Weekly Progress Videos
+                </Text>
+              </View>
+              <View className="flex flex-row space-x-4">
+                <Feather name="check" color="#A91D3A" size={32} />
+                <Text className="text-egoist-white text-lg">
+                  Weekly Progress Reports
+                </Text>
+              </View>
+              <View className="flex flex-row space-x-4">
+                <Feather name="check" color="#A91D3A" size={32} />
+                <Text className="text-egoist-white text-lg">No Ads</Text>
+              </View>
+            </View>
+          ) : (
+            <View className="space-y-2">
+              <Text className="text-xl text-egoist-red">
+                Take Your Progress Seriously
+              </Text>
+              <View className="border border-egoist-white p-4 rounded-xl space-y-4">
+                <View className="flex flex-row space-x-4">
+                  <Feather name="check" color="#A91D3A" size={32} />
+                  <Text className="text-egoist-white text-lg">
+                    Daily Progress Check In
+                  </Text>
+                </View>
+                <View className="flex flex-row space-x-4">
+                  <Feather name="check" color="#A91D3A" size={32} />
+                  <Text className="text-egoist-white text-lg">
+                    Weekly Progress Videos
+                  </Text>
+                </View>
+                <View className="flex flex-row space-x-4">
+                  <Feather name="check" color="#A91D3A" size={32} />
+                  <Text className="text-egoist-white text-lg">
+                    Weekly Progress Reports
+                  </Text>
+                </View>
+                <View className="flex flex-row space-x-4">
+                  <Feather name="check" color="#A91D3A" size={32} />
+                  <Text className="text-egoist-white text-lg">No Ads</Text>
+                </View>
+                <View>
+                  <Button
+                    className="p-2"
+                    text="Get Started"
+                    onPress={() => router.push("/(others)/paywall")}
+                  />
+                </View>
+              </View>
+            </View>
+          )}
+        </View>
+
+        <View className="my-auto space-y-4">
+          <Button
+            className="p-4"
+            text="Change Goal Weight"
+            onPress={() => setOpenGoalWeightModal(true)}
+          />
+          <Button className="p-4" text="Rate Us" />
+          <Button className="p-4" text="Share Feedback" />
+          <Button
+            className="p-4"
+            text="Logout"
+            onPress={async () => {
+              setAuthAtom(null);
+              await AsyncStorage.clear();
+              router.replace("/");
+            }}
+          />
+        </View>
+      </View>
     </EgoistView>
   );
 }

@@ -29,3 +29,15 @@ export type AuthSchema = z.infer<typeof authFormSchema>;
 export type ProgressEntry = z.infer<typeof progressEntrySchema>;
 
 export type ProgressVideo = z.infer<typeof progressVideoSchema>;
+
+export const planSkus = [
+  "egoist_3999_1y_lockedin",
+  "egoist_499_1m_lockedin",
+] as const;
+
+export type PlanSkus = (typeof planSkus)[number];
+
+export const skusTiers: { [key: string]: string } = {
+  egoist_3999_1y_lockedin: "Annual: Locked In Tier",
+  egoist_499_1m_lockedin: "Monthly: Locked In Tier",
+};
