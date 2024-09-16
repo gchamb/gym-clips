@@ -4,6 +4,7 @@ import Input from "@/components/ui/input";
 import sanitizedConfig from "@/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Purchases from "react-native-purchases";
+import * as WebBrowser from "expo-web-browser";
 
 import { Feather } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
@@ -84,12 +85,12 @@ export default function Settings() {
       </View>
     );
   }
-  // data.activeSubscriptions = ["egoist_499_1m_lockedin"]; // for testing
+  // data.activeSubscriptions = ["egoist_499_1m_lockedin", ""]; // for testing
 
   return (
     <EgoistView>
       {openGoalWeightModal && (
-        <Modal transparent>
+        <Modal transparent animationType="fade">
           <BlurView className="flex-1">
             <View className="bg-egoist-black w-11/12 h-1/3 m-auto rounded-2xl drop-shadow-2xl p-2 flex justify-evenly space-y-4">
               <Text className="text-egoist-white text-3xl font-semibold text-center">
@@ -213,8 +214,16 @@ export default function Settings() {
             text="Change Goal Weight"
             onPress={() => setOpenGoalWeightModal(true)}
           />
-          <Button className="p-4" text="Rate Us" />
-          <Button className="p-4" text="Share Feedback" />
+          {/* <Button className="p-4" text="Rate Us" /> */}
+          <Button
+            className="p-4"
+            text="Share Feedback"
+            onPress={async () =>
+              await WebBrowser.openBrowserAsync(
+                "https://56jxitzk3oy.typeform.com/to/SkxsvrBh"
+              )
+            }
+          />
           <Button
             className="p-4"
             text="Logout"
