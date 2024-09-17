@@ -1,8 +1,10 @@
-import { router, Tabs } from "expo-router";
+import useUser from "@/hooks/useUser";
+import { Tabs } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { Image, Pressable, View } from "react-native";
+import { Image, Text, View } from "react-native";
 
 export default function TabsLayout() {
+  const { isLoading, data } = useUser();
   return (
     <Tabs
       screenOptions={{
@@ -41,13 +43,12 @@ export default function TabsLayout() {
           },
           headerRight: () => {
             return (
-              <View className="pr-6">
-                <Pressable
-                  className="active:scale-95"
-                  onPress={() => router.push("/(others)/daily-entry")}
-                >
-                  <Feather color="#A91D3A" name="plus" size={28} />
-                </Pressable>
+              <View className="pr-8">
+                <Text className="text-egoist-white text-xl font-bold">
+                  {isLoading
+                    ? "Loading User Data"
+                    : `${data?.goalWeight ?? 0} lbs`}
+                </Text>
               </View>
             );
           },
