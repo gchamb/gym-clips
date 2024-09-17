@@ -1,5 +1,5 @@
 import sanitizedConfig from "@/config";
-import { AuthTokens, ProgressEntry, ProgressVideo } from "@/types";
+import { AuthTokens, ProgressEntry, ProgressVideo, UserData } from "@/types";
 
 export async function getAssets(
   tokens: AuthTokens,
@@ -33,6 +33,26 @@ export async function getAssets(
     entries: ProgressEntry[];
     videos: ProgressVideo[];
   };
+
+  return data;
+}
+
+export async function getUserData(tokens: AuthTokens) {
+  const getUserResponse = await fetch(
+    `${sanitizedConfig.API_URL}/api/v1/user`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${tokens?.jwt_token}`,
+      },
+    }
+  );
+
+  if (!getUserResponse.ok) {
+    throw new Error("Unable to fetch user data.");
+  }
+
+  const data = (await getUserResponse.json()) as UserData;
 
   return data;
 }

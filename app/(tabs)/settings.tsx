@@ -5,6 +5,7 @@ import sanitizedConfig from "@/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Purchases from "react-native-purchases";
 import * as WebBrowser from "expo-web-browser";
+import useUser from "@/hooks/useUser";
 
 import { Feather } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
@@ -27,6 +28,8 @@ export default function Settings() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const { refetch: refetchUser } = useUser();
 
   const saveChangedGoalWeight = async () => {
     if (goalWeight === "") {
@@ -61,6 +64,8 @@ export default function Settings() {
       if (!response.ok) {
         throw new Error("Unable to save goal weight");
       }
+
+      await refetchUser();
 
       clearState();
     } catch (err) {

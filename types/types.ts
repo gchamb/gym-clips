@@ -24,6 +24,11 @@ export type AuthTokens = {
   uid: string;
 } | null;
 
+export type UserData = {
+  currentWeight: number;
+  goalWeight: number;
+} | null;
+
 export type AuthSchema = z.infer<typeof authFormSchema>;
 
 export type ProgressEntry = z.infer<typeof progressEntrySchema>;
