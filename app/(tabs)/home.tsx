@@ -1,28 +1,36 @@
 import PictureCapture from "@/components/picture-capture";
 import Carousel from "react-native-reanimated-carousel";
 import EgoistView from "@/components/ui/egoist-view";
-import PlaceholderAd from "@/components/ui/placeholder-ad";
+import BannerAd from "@/components/ui/banner-ad";
 import VideoPreview from "@/components/video-preview";
 import AssetModal from "@/components/show-asset-modal";
+import useAd from "@/hooks/useAd";
 
+import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import { getAssets } from "@/lib/query-functions";
 import { authAtom } from "@/stores/auth";
 import { useQuery } from "@tanstack/react-query";
-import { useAtomValue } from "jotai/react";
-import { useCallback, useState } from "react";
+import { useAtomValue, useSetAtom } from "jotai/react";
+import { useCallback, useEffect, useState } from "react";
 import { Dimensions, ScrollView, Text, View } from "react-native";
 import { formatDate } from "@/lib/helpers";
 import { Link, useFocusEffect } from "expo-router";
 import { ProgressEntry, ProgressVideo } from "@/types";
+import { majorInteractionsAtom, trackingAtom } from "@/stores/tracking";
 
 export default function Home() {
   const authTokens = useAtomValue(authAtom);
+  const setTracking = useSetAtom(trackingAtom);
+  const setMajorInteractions = useSetAtom(majorInteractionsAtom);
+
   const { isLoading, data, refetch } = useQuery({
     queryKey: ["getAssets"],
     queryFn: () => getAssets(authTokens),
   });
   const [showVideoPreview, setShowVideoPreview] =
     useState<ProgressVideo | null>(null);
+
+  const { isTimeToShowAd, isReady, showAd, isShowing } = useAd();
 
   // derived and not that compute intensive (max 5 entries) so a rerender is on this fine
   const getTodaysEntryIndex = data?.entries.findIndex((entry, idx) => {
@@ -55,6 +63,45 @@ export default function Home() {
       refetch();
     }, [refetch])
   );
+
+  useEffect(() => {
+    const checkForPermissions = async () => {
+      try {
+        const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
+        if (result !== RESULTS.GRANTED) {
+          // The permission has not been requested, so request it.
+          const status = await request(
+            PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY
+          );
+
+          setTracking(status === RESULTS.GRANTED ? true : false);
+        }
+
+        if (result === RESULTS.GRANTED) {
+          setTracking(true);
+        }
+      } catch (err) {
+        // sentry capture
+      }
+    };
+
+    const onInit = async () => {
+      await checkForPermissions();
+    };
+    onInit();
+  }, []);
+
+  useEffect(() => {
+    const timeToShowAd = async () => {
+      if (isShowing) return;
+
+      if (isReady && isTimeToShowAd) {
+        showAd();
+      }
+    };
+
+    timeToShowAd();
+  }, [isReady, isTimeToShowAd]);
 
   return (
     <EgoistView className="relative">
@@ -136,14 +183,16 @@ export default function Home() {
                 key={item.id}
                 item={item}
                 color="white"
-                onPress={() => setShowVideoPreview(item)}
+                onPress={() => {
+                  setShowVideoPreview(item);
+                }}
               />
             ))}
           </ScrollView>
         </View>
       </View>
 
-      <PlaceholderAd />
+      <BannerAd />
     </EgoistView>
   );
 }

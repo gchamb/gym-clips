@@ -2,15 +2,16 @@ import PictureCapture from "@/components/picture-capture";
 import Button from "@/components/ui/button";
 import Dropdown from "@/components/ui/dropdown";
 import EgoistView from "@/components/ui/egoist-view";
-import PlaceholderAd from "@/components/ui/placeholder-ad";
+import BannerAd from "@/components/ui/banner-ad";
 import sanitizedConfig from "@/config";
 import { ImagePickerAsset } from "expo-image-picker";
 import { getAndUploadImage, Months, weights } from "@/lib/helpers";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
-import { useAtomValue } from "jotai/react";
+import { useAtom, useAtomValue } from "jotai/react";
 import { authAtom } from "@/stores/auth";
+import { majorInteractionsAtom } from "@/stores/tracking";
 
 const date = new Date();
 
@@ -19,7 +20,11 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<ImagePickerAsset | null>(null);
+
   const authTokens = useAtomValue(authAtom);
+  const [majorInteractions, setMajorInteractions] = useAtom(
+    majorInteractionsAtom
+  );
 
   const month = Months[date.getMonth()];
 
@@ -72,6 +77,9 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
       );
     } finally {
       setLoading(false);
+      setMajorInteractions(async (prev) => {
+        return (await prev) + 1;
+      });
     }
   };
 
@@ -141,7 +149,7 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
         </View>
       </View>
 
-      <PlaceholderAd />
+      <BannerAd />
     </EgoistView>
   );
 }

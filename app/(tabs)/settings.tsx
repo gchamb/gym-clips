@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Purchases from "react-native-purchases";
 import * as WebBrowser from "expo-web-browser";
 import useUser from "@/hooks/useUser";
+import BannerAd from "@/components/ui/banner-ad";
 
 import { Feather } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
@@ -240,6 +241,7 @@ export default function Settings() {
           />
         </View>
       </View>
+      <BannerAd />
     </EgoistView>
   );
 }
