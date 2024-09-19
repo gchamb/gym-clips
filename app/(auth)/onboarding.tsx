@@ -3,6 +3,8 @@ import Button from "@/components/ui/button";
 import Dropdown from "@/components/ui/dropdown";
 import EgoistView from "@/components/ui/egoist-view";
 import sanitizedConfig from "@/config";
+import * as Sentry from "@sentry/react-native";
+
 import { ImagePickerAsset } from "expo-image-picker";
 import { authAtom } from "@/stores/auth";
 import { Href, router } from "expo-router";
@@ -71,6 +73,7 @@ export default function Onboarding() {
       // direct to the home screen
       router.replace("/paywall?nextScreen=home" as Href<string>);
     } catch (err) {
+      Sentry.captureException(err);
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);

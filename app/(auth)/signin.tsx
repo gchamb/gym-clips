@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/react-native";
+
 import Button from "@/components/ui/button";
 import EgoistView from "@/components/ui/egoist-view";
 import Separator from "@/components/ui/separator";
@@ -6,7 +8,6 @@ import sanitizedConfig from "@/config";
 import { useState } from "react";
 import {
   Dimensions,
-  FlatList,
   Image,
   KeyboardAvoidingView,
   Text,
@@ -77,7 +78,7 @@ export default function Auth() {
         router.replace("/(auth)/onboarding");
       }
     } catch (err) {
-      // NOTE: capture error with sentry
+      Sentry.captureException(err);
     }
   };
 
