@@ -14,6 +14,7 @@ import { authAtom } from "@/stores/auth";
 import { majorInteractionsAtom } from "@/stores/tracking";
 import { getAssets } from "@/lib/query-functions";
 import { useQuery } from "@tanstack/react-query";
+import { trackEvent } from "@aptabase/react-native";
 
 const date = new Date();
 
@@ -71,6 +72,8 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
       if (!addEntryRes.ok) {
         setError("Unable to add entry. Try again.");
       }
+
+      trackEvent("entry");
 
       await refetchAssets();
 

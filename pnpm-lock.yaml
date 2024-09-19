@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@aptabase/react-native':
+        specifier: ^0.3.10
+        version: 0.3.10(react-native@0.74.5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
       '@expo/vector-icons':
         specifier: ^14.0.2
         version: 14.0.2
@@ -178,6 +181,12 @@ packages:
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
+
+  '@aptabase/react-native@0.3.10':
+    resolution: {integrity: sha512-EqmW+AZsigas5aWTjEa/EP3b6WQAsMHpp9iF6992qwNMIPQkSgqLn00tk4dAWBKywBbAlffEbviFtCXV9LNR8g==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
 
   '@babel/code-frame@7.10.4':
     resolution: {integrity: sha512-vG6SvB6oYEhvgisZNFRmRCUkLz11c7rp+tbNTynGqc6mS1d5ATd/sGyV6W0KZZnXRKMTzZDRgQT3Ou9jhpAfUg==}
@@ -5912,6 +5921,11 @@ snapshots:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.25
+
+  '@aptabase/react-native@0.3.10(react-native@0.74.5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)':
+    dependencies:
+      react: 18.2.0
+      react-native: 0.74.5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.2.0)
 
   '@babel/code-frame@7.10.4':
     dependencies:

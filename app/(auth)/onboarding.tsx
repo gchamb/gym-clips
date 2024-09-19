@@ -13,6 +13,7 @@ import { useState } from "react";
 import { Text, View } from "react-native";
 import { AuthTokens } from "@/types";
 import { getAndUploadImage, weights } from "@/lib/helpers";
+import { trackEvent } from "@aptabase/react-native";
 
 export default function Onboarding() {
   const [goalWeight, setGoalWeight] = useState<number>();
@@ -69,6 +70,8 @@ export default function Onboarding() {
       };
 
       setAuthTokens(configuredTokens);
+
+      trackEvent("onboarding_completed");
 
       // direct to the home screen
       router.replace("/paywall?nextScreen=home" as Href<string>);

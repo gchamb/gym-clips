@@ -20,6 +20,7 @@ import { router } from "expo-router";
 import { AuthTokens } from "@/types";
 import Purchases from "react-native-purchases";
 import Carousel from "react-native-reanimated-carousel";
+import { trackEvent } from "@aptabase/react-native";
 
 GoogleSignin.configure({
   webClientId:
@@ -71,6 +72,8 @@ export default function Auth() {
       setAuthTokens(authRes);
 
       await Purchases.logIn(authRes.uid);
+
+      trackEvent("sign_in", { method: "google" });
 
       if (authRes.is_onboarded) {
         router.replace("/home");

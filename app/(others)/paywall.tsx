@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import RevenueCatUI from "react-native-purchases-ui";
 import { View, Text } from "react-native";
 import { Href, router, useLocalSearchParams } from "expo-router";
+import { trackEvent } from "@aptabase/react-native";
+import { captureException } from "@sentry/react-native";
 
 export default function Paywall() {
   const { nextScreen } = useLocalSearchParams<{ nextScreen?: string }>();
+
+  useEffect(() => {
+    trackEvent("paywall_shown");
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -16,6 +22,12 @@ export default function Paywall() {
           } else {
             router.dismiss();
           }
+        }}
+        onPurchaseStarted={() => trackEvent("paywall_started")}
+        onPurchaseCompleted={() => trackEvent("paywall_completed")}
+        onPurchaseCancelled={() => trackEvent("paywall_cancelled")}
+        onPurchaseError={({ error }) => {
+          captureException(error);
         }}
       />
     </View>
