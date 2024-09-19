@@ -12,7 +12,6 @@ export default function Dropdown({
   placeholder: string;
   onValueChanged: (option: Option) => void;
 }) {
-  console.log(placeholder);
   return (
     <SelectPrimitive.Root onValueChange={onValueChanged}>
       <SelectPrimitive.Trigger className="h-[62px] p-4 border border-black rounded-2xl dark:border-white">

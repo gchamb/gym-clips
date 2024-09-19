@@ -78,7 +78,6 @@ export default function Auth() {
       }
     } catch (err) {
       // NOTE: capture error with sentry
-      console.log(err);
     }
   };
 

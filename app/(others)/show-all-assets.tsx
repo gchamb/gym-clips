@@ -1,6 +1,8 @@
 import EgoistView from "@/components/ui/egoist-view";
 import AssetModal from "@/components/show-asset-modal";
 import VideoPreview from "@/components/video-preview";
+import LoadingScreen from "@/components/loading-screen";
+import ErrorScreen from "@/components/error-screen";
 
 import { formatDataByMonth, Months } from "@/lib/helpers";
 import { useLocalSearchParams } from "expo-router";
@@ -35,7 +37,7 @@ export default function ShowAllAssets() {
   const queryKey = `get${
     type === "progress-entry" ? "Entries" : "Videos"
   } ?frequency=${selectedFrequency}`;
-  const { isLoading, data, refetch } = useQuery({
+  const { isLoading, data, refetch, isRefetching, error } = useQuery({
     queryKey: [queryKey],
     queryFn: () =>
       getAssets(authTokens, {
@@ -57,6 +59,20 @@ export default function ShowAllAssets() {
       return (await prev) + 1;
     });
   }, []);
+
+  if (isLoading || isRefetching || data === undefined) {
+    return <LoadingScreen />;
+  }
+  if (error) {
+    return (
+      <ErrorScreen
+        error={
+          error instanceof Error ? error.message : "Unable to fetch assets."
+        }
+        refetch={refetch}
+      />
+    );
+  }
 
   return (
     <EgoistView>

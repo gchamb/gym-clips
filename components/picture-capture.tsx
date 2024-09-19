@@ -50,9 +50,7 @@ export default function PictureCapture(props: {
       setSelectedAsset(result.assets[0]);
 
       props.liftImage?.(result.assets[0]);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   if (props.showOnlySkeleton) {

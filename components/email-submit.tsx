@@ -63,7 +63,6 @@ export default function EmailSubmit(props: EmailSubmitProps) {
         router.replace("/(auth)/onboarding");
       }
     } catch (err) {
-      console.log(err);
       setError("root", {
         message: err instanceof Error ? err.message : String(err),
       });

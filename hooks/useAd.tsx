@@ -49,16 +49,6 @@ export default function useAd() {
     }
   }, [isClosed]);
 
-  console.log(
-    "interactions",
-    majorInteractions,
-    "\nisLoaded: ",
-    isLoaded,
-    "\ntime to show: ",
-    isTimeToShowAd,
-    `\nerror:${error}`
-  );
-
   return {
     isTimeToShowAd,
     isReady: isLoaded,

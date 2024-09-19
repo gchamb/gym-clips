@@ -9,7 +9,7 @@ import { getAndUploadImage, Months, weights } from "@/lib/helpers";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
-import { useAtom, useAtomValue } from "jotai/react";
+import { useAtomValue, useSetAtom } from "jotai/react";
 import { authAtom } from "@/stores/auth";
 import { majorInteractionsAtom } from "@/stores/tracking";
 
@@ -22,9 +22,7 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
   const [image, setImage] = useState<ImagePickerAsset | null>(null);
 
   const authTokens = useAtomValue(authAtom);
-  const [majorInteractions, setMajorInteractions] = useAtom(
-    majorInteractionsAtom
-  );
+  const setMajorInteractions = useSetAtom(majorInteractionsAtom);
 
   const month = Months[date.getMonth()];
 
