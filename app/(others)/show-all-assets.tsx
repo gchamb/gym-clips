@@ -4,7 +4,7 @@ import VideoPreview from "@/components/video-preview";
 
 import { formatDataByMonth, Months } from "@/lib/helpers";
 import { useLocalSearchParams } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   SectionList,
   Text,
@@ -15,12 +15,15 @@ import {
 } from "react-native";
 import { getAssets } from "@/lib/query-functions";
 import { useQuery } from "@tanstack/react-query";
-import { useAtomValue } from "jotai/react";
+import { useAtomValue, useSetAtom } from "jotai/react";
 import { authAtom } from "@/stores/auth";
 import { ProgressEntry, ProgressVideo } from "@/types";
+import { majorInteractionsAtom } from "@/stores/tracking";
 
 export default function ShowAllAssets() {
   const authTokens = useAtomValue(authAtom);
+  const setMajorInteractions = useSetAtom(majorInteractionsAtom);
+
   const { type } = useLocalSearchParams<{ type: string }>();
   const [selectedAsset, setSelectedAsset] = useState<
     ProgressEntry | ProgressVideo | null
@@ -42,13 +45,18 @@ export default function ShowAllAssets() {
         page: 1,
       }),
   });
-
   const progressEntriesByMonth = useMemo(() => {
     if (data === undefined) return;
     if (type !== "progress-entry") return;
 
     return formatDataByMonth(data.entries);
   }, [data, type]);
+
+  useEffect(() => {
+    setMajorInteractions(async (prev) => {
+      return (await prev) + 1;
+    });
+  }, []);
 
   return (
     <EgoistView>
@@ -80,7 +88,12 @@ export default function ShowAllAssets() {
                     return (
                       <Pressable
                         className="p-1"
-                        onPress={() => setSelectedAsset(item)}
+                        onPress={() => {
+                          setMajorInteractions(async (prev) => {
+                            return (await prev) + 1;
+                          });
+                          setSelectedAsset(item);
+                        }}
                       >
                         <Image
                           source={{
