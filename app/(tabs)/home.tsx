@@ -64,12 +64,6 @@ export default function Home() {
     return data.entries;
   }, [data?.entries, getTodaysEntryIndex]);
 
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch])
-  );
-
   useEffect(() => {
     const checkForPermissions = async () => {
       try {

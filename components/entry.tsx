@@ -12,10 +12,18 @@ import { Text, View } from "react-native";
 import { useAtomValue, useSetAtom } from "jotai/react";
 import { authAtom } from "@/stores/auth";
 import { majorInteractionsAtom } from "@/stores/tracking";
+import { getAssets } from "@/lib/query-functions";
+import { useQuery } from "@tanstack/react-query";
 
 const date = new Date();
 
 export default function Entry(props: { presentation: "screen" | "modal" }) {
+  const { refetch: refetchAssets } = useQuery({
+    queryKey: ["getAssets"],
+    queryFn: () => getAssets(authTokens),
+    enabled: false,
+  });
+
   const [currentWeight, setCurrentWeight] = useState<number>();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -63,6 +71,8 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
       if (!addEntryRes.ok) {
         setError("Unable to add entry. Try again.");
       }
+
+      await refetchAssets();
 
       if (router.canDismiss()) {
         router.dismiss();
