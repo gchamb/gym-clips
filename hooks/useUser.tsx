@@ -5,8 +5,10 @@ import { useAtomValue } from "jotai/react";
 
 export default function useUser() {
   const authTokens = useAtomValue(authAtom);
-  return useQuery({
+  const user = useQuery({
     queryKey: ["getUserData"],
     queryFn: () => getUserData(authTokens),
   });
+
+  return user;
 }

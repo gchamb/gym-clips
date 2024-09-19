@@ -20,10 +20,11 @@ import {
   View,
 } from "react-native";
 import { formatDate } from "@/lib/helpers";
-import { Link, useFocusEffect } from "expo-router";
+import { Link } from "expo-router";
 import { ProgressEntry, ProgressVideo } from "@/types";
 import { trackingAtom } from "@/stores/tracking";
 import ErrorScreen from "@/components/error-screen";
+import { captureException } from "@sentry/react-native";
 
 export default function Home() {
   const authTokens = useAtomValue(authAtom);
@@ -81,7 +82,7 @@ export default function Home() {
           setTracking(true);
         }
       } catch (err) {
-        // sentry capture
+        captureException(err);
       }
     };
 
