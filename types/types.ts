@@ -9,12 +9,14 @@ export type ENV = {
   NODE_ENV: string | undefined;
   API_URL: string | undefined;
   REVENUE_CAT_KEY: string | undefined;
+  APTABASE_API_KEY: string | undefined;
 };
 
 export type SantizedENV = {
   NODE_ENV: string;
   API_URL: string;
   REVENUE_CAT_KEY: string;
+  APTABASE_API_KEY: string;
 };
 
 export type AuthTokens = {

@@ -3,10 +3,16 @@ import EgoistView from "@/components/ui/egoist-view";
 import { authAtom } from "@/stores/auth";
 import { Redirect, router } from "expo-router";
 import { useAtomValue } from "jotai/react";
+import { useEffect } from "react";
 import { View, Image } from "react-native";
+import { trackEvent } from "@aptabase/react-native";
 
 export default function LandingPage() {
   const authTokens = useAtomValue(authAtom);
+
+  useEffect(() => {
+    trackEvent("app_open");
+  }, []);
 
   if (authTokens?.is_onboarded) {
     return <Redirect href="/(tabs)/home" />;

@@ -3,9 +3,10 @@ import * as SplashScreen from "expo-splash-screen";
 import * as Sentry from "@sentry/react-native";
 import Purchases from "react-native-purchases";
 import sanitizedConfig from "@/config";
+import Aptabase, { trackEvent } from "@aptabase/react-native";
 import "react-native-reanimated";
 
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 import { PortalHost } from "@/components/primitives/portal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -22,10 +23,18 @@ Sentry.init({
   enabled: !__DEV__,
 });
 
+Aptabase.init(sanitizedConfig.APTABASE_API_KEY);
+
 export default function RootLayout() {
+  const pathname = usePathname();
+  useEffect(() => {
+    trackEvent("screen_tracking", { screen: pathname });
+  }, [pathname]);
+
   useEffect(() => {
     if (__DEV__) {
       Purchases.setLogLevel(Purchases.LOG_LEVEL.VERBOSE);
+      Aptabase.dispose();
     } else {
       Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG);
     }

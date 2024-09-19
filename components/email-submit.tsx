@@ -11,6 +11,7 @@ import { AuthSchema, AuthTokens } from "@/types";
 import { authAtom } from "@/stores/auth";
 import { useSetAtom } from "jotai/react";
 import { useState } from "react";
+import { trackEvent } from "@aptabase/react-native";
 
 type EmailSubmitProps = {
   type: "Sign in" | "Sign up";
@@ -56,6 +57,13 @@ export default function EmailSubmit(props: EmailSubmitProps) {
       setAuthTokens(authRes);
 
       await Purchases.logIn(authRes.uid);
+
+      const eventName = props.type
+        .split(" ")
+        .map((word) => word.toLowerCase())
+        .join("_");
+
+      trackEvent(eventName, { method: "email" });
 
       if (authRes.is_onboarded) {
         router.replace("/home");

@@ -5,6 +5,7 @@ const getSanitzedConfig = (): SantizedENV => {
     NODE_ENV: process.env.NODE_ENV,
     API_URL: process.env.EXPO_PUBLIC_API_URL,
     REVENUE_CAT_KEY: process.env.EXPO_PUBLIC_REVENUE_CAT_KEY,
+    APTABASE_API_KEY: process.env.EXPO_PUBLIC_APTABASE_API_KEY,
   };
 
   for (const [key, value] of Object.entries(env)) {
