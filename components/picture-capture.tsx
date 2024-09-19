@@ -1,4 +1,6 @@
 import * as ExpoImagePicker from "expo-image-picker";
+import * as Sentry from "@sentry/react-native";
+
 import Button from "./ui/button";
 import { useState } from "react";
 import { View, Image, Pressable } from "react-native";
@@ -51,7 +53,7 @@ export default function PictureCapture(props: {
 
       props.liftImage?.(result.assets[0]);
     } catch (err) {
-      console.log(err);
+      Sentry.captureException(err);
     }
   };
 

@@ -12,18 +12,24 @@ import { authAtom } from "@/stores/auth";
 import { useQuery } from "@tanstack/react-query";
 import { useAtomValue, useSetAtom } from "jotai/react";
 import { useCallback, useEffect, useState } from "react";
-import { Dimensions, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { formatDate } from "@/lib/helpers";
 import { Link, useFocusEffect } from "expo-router";
 import { ProgressEntry, ProgressVideo } from "@/types";
-import { majorInteractionsAtom, trackingAtom } from "@/stores/tracking";
+import { trackingAtom } from "@/stores/tracking";
+import ErrorScreen from "@/components/error-screen";
 
 export default function Home() {
   const authTokens = useAtomValue(authAtom);
   const setTracking = useSetAtom(trackingAtom);
-  const setMajorInteractions = useSetAtom(majorInteractionsAtom);
 
-  const { isLoading, data, refetch } = useQuery({
+  const { isLoading, data, refetch, error } = useQuery({
     queryKey: ["getAssets"],
     queryFn: () => getAssets(authTokens),
   });
@@ -57,12 +63,6 @@ export default function Home() {
     }
     return data.entries;
   }, [data?.entries, getTodaysEntryIndex]);
-
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch])
-  );
 
   useEffect(() => {
     const checkForPermissions = async () => {
@@ -102,6 +102,17 @@ export default function Home() {
 
     timeToShowAd();
   }, [isReady, isTimeToShowAd]);
+
+  if (error) {
+    return (
+      <ErrorScreen
+        error={
+          error instanceof Error ? error.message : "Unable to fetch assets."
+        }
+        refetch={refetch}
+      />
+    );
+  }
 
   return (
     <EgoistView className="relative">
@@ -173,22 +184,38 @@ export default function Home() {
             Show All
           </Link>
 
-          <ScrollView
-            horizontal
-            contentContainerStyle={{ marginTop: 10 }}
-            showsHorizontalScrollIndicator={false}
-          >
-            {data?.videos.map((item) => (
-              <VideoPreview
-                key={item.id}
-                item={item}
-                color="white"
-                onPress={() => {
-                  setShowVideoPreview(item);
-                }}
-              />
-            ))}
-          </ScrollView>
+          {isLoading || data === undefined ? (
+            <View className="items-center justify-center h-[175px]">
+              <ActivityIndicator />
+            </View>
+          ) : (
+            <>
+              {data.videos.length > 0 ? (
+                <ScrollView
+                  horizontal
+                  contentContainerStyle={{ marginTop: 10 }}
+                  showsHorizontalScrollIndicator={false}
+                >
+                  {data?.videos.map((item) => (
+                    <VideoPreview
+                      key={item.id}
+                      item={item}
+                      color="white"
+                      onPress={() => {
+                        setShowVideoPreview(item);
+                      }}
+                    />
+                  ))}
+                </ScrollView>
+              ) : (
+                <View className="h-[175px] items-center justify-center">
+                  <Text className="text-2xl text-white font-semibold">
+                    No Progress Videos Yet!
+                  </Text>
+                </View>
+              )}
+            </>
+          )}
         </View>
       </View>
 

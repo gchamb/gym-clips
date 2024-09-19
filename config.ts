@@ -7,8 +7,6 @@ const getSanitzedConfig = (): SantizedENV => {
     REVENUE_CAT_KEY: process.env.EXPO_PUBLIC_REVENUE_CAT_KEY,
   };
 
-  console.log(env);
-
   for (const [key, value] of Object.entries(env)) {
     if (value === undefined) {
       throw new Error(`Missing key ${key} in config.env`);

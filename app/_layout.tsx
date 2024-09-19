@@ -1,5 +1,6 @@
 import mobileAds from "react-native-google-mobile-ads";
 import * as SplashScreen from "expo-splash-screen";
+import * as Sentry from "@sentry/react-native";
 import Purchases from "react-native-purchases";
 import sanitizedConfig from "@/config";
 import "react-native-reanimated";
@@ -14,6 +15,12 @@ import { Platform } from "react-native";
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
+
+Sentry.init({
+  dsn: "https://a38a1ffadde38ebe85e20f70defbffd3@o4505398186541056.ingest.us.sentry.io/4507977137979392",
+  debug: false,
+  enabled: !__DEV__,
+});
 
 export default function RootLayout() {
   useEffect(() => {
@@ -31,7 +38,9 @@ export default function RootLayout() {
         });
       }
 
-      await mobileAds().initialize();
+      await mobileAds()
+        .initialize()
+        .catch((err) => Sentry.captureException(err));
     };
 
     inititalize();
