@@ -14,9 +14,9 @@ export default function Dropdown({
 }) {
   return (
     <SelectPrimitive.Root onValueChange={onValueChanged}>
-      <SelectPrimitive.Trigger className="h-[62px] p-4 border border-black rounded-2xl dark:border-white">
+      <SelectPrimitive.Trigger className="h-[62px] p-4 border  rounded-2xl border-white">
         <SelectPrimitive.Value
-          className="text-xl text-black dark:text-white"
+          className="text-xl text-white"
           placeholder={placeholder}
         />
 
@@ -26,7 +26,7 @@ export default function Dropdown({
       </SelectPrimitive.Trigger>
       <SelectPrimitive.Portal>
         <SelectPrimitive.Overlay style={StyleSheet.absoluteFill}>
-          <SelectPrimitive.Content className="bg-black w-full text-white w-11/12 mx-auto p-2 rounded-xl mt-2 dark:bg-white dark:text-black">
+          <SelectPrimitive.Content className="bg-black w-full text-white w-11/12 mx-auto p-2 rounded-xl mt-2 ">
             <SelectPrimitive.Group className="max-h-[200px]">
               <ScrollView>
                 {items.map((item, idx) => {
@@ -37,7 +37,7 @@ export default function Dropdown({
                       label={item}
                       value={item}
                     >
-                      <Text className="text-white text-lg dark:text-black">
+                      <Text className="text-white text-lg">
                         {item}
                       </Text>
                       <SelectPrimitive.ItemIndicator />

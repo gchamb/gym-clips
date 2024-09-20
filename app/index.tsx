@@ -9,6 +9,7 @@ import { trackEvent } from "@aptabase/react-native";
 
 export default function LandingPage() {
   const authTokens = useAtomValue(authAtom);
+  const width = Dimensions.get("screen").width
 
   useEffect(() => {
     trackEvent("app_open");
@@ -23,21 +24,20 @@ export default function LandingPage() {
 
   return (
     <EgoistView className="justify-center space-y-8">
-      <View className="mt-20 w-[200px] rounded-2xl h-[200px] mx-auto  justify-center items-center">
+      <View className={`mt-20 ${ width <= 375 ? 'w-[150px] h-[150px]' : 'w-[200px] h-[200px]'} rounded-2xl  mx-auto justify-center items-center`}>
         <Image
           source={require("@/assets/images/egoist-logo.png")}
-          width={200}
-          height={200}
+          className="w-full h-full"
         />
       </View>
 
-      <View className="mx-auto">
+      <View className="w-11/12 mx-auto">
         <Text className="text-white text-center z-[20] text-5xl font-bold">
           THE ONLY PLACE TO GO FROM
           <Text className="text-egoist-red"> FAILURE IS TO WIN.</Text>
         </Text>
       </View>
-      <View className="flex-1 mb-20 w-11/12 h-4/5 mx-auto justify-end">
+      <View className="flex-1 mb-4 w-11/12 h-4/5 mx-auto justify-end">
         <Button text="Start Journey" onPress={() => router.push("/signin")} />
       </View>
     </EgoistView>

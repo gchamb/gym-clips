@@ -98,7 +98,7 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
     <EgoistView>
       <View
         className={`w-11/12 mx-auto space-y-8 ${
-          props.presentation === "screen" ? "mt-10" : ""
+          props.presentation === "screen" ? "mt-4" : "mt-[-25px]"
         }`}
       >
         <View className="space-y-2">

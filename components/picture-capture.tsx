@@ -3,7 +3,7 @@ import * as Sentry from "@sentry/react-native";
 
 import Button from "./ui/button";
 import { useState } from "react";
-import { View, Image, Pressable } from "react-native";
+import { View, Image, Pressable, Dimensions } from "react-native";
 import { router } from "expo-router";
 import { Skeleton } from "@rneui/themed";
 
@@ -25,6 +25,8 @@ export default function PictureCapture(props: {
 }) {
   const [selectedAsset, setSelectedAsset] =
     useState<ExpoImagePicker.ImagePickerAsset | null>(null);
+  
+  const width = Dimensions.get("screen").width
 
   const pickImage = async () => {
     if (props?.openDailyEntry) {
@@ -71,7 +73,7 @@ export default function PictureCapture(props: {
   return (
     <>
       {selectedAsset === null && props.default === undefined ? (
-        <View className="border-4 border-white h-full max-h-[300px] w-[200px] mx-auto rounded-xl">
+        <View className={`border-4 border-white h-full ${width <= 375 ? 'max-h-[250px] w-[200px]' : 'max-h-[300px] w-[200px]'}  mx-auto rounded-xl`}>
           <View className="w-full h-full relative flex">
             <View className="absolute w-full h-full z-[10]">
               <Cross />

@@ -40,6 +40,8 @@ export default function Auth() {
 
   const setAuthTokens = useSetAtom(authAtom);
 
+  const width = Dimensions.get("screen").width
+
   const signInWithGoogle = async () => {
     try {
       // Check if your device supports Google Play
@@ -92,7 +94,14 @@ export default function Auth() {
         className="flex-1 w-11/12 mx-auto"
       >
         {!hideImageCarousel && (
-          <View className="mt-6">
+          <>
+          {width <= 375 ?  <View className={`w-[150px] h-[150px] mt-8 rounded-2xl  mx-auto justify-center items-center`}>
+        <Image
+          source={require("@/assets/images/egoist-logo.png")}
+          className="w-full h-full"
+        />
+      </View> : 
+      <View>
             <Carousel
               width={Dimensions.get("screen").width}
               height={300}
@@ -116,7 +125,9 @@ export default function Auth() {
                 );
               }}
             />
-          </View>
+          </View>}
+          </>
+          
         )}
 
         <View className="mt-auto mb-10 space-y-4">
