@@ -25,7 +25,10 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -50,7 +53,7 @@
         "react-native-google-mobile-ads",
         {
           "androidAppId": "ca-app-pub-xxxxxxxx~xxxxxxxx",
-          "iosAppId": "ca-app-pub-8416340468270342~2283227687", // don't hurt me please
+          "iosAppId": "ca-app-pub-8416340468270342~2283227687",
           "userTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
           "skAdNetworkItems": [
             "cstr6suwn9.skadnetwork",
@@ -108,13 +111,21 @@
       [
         "react-native-permissions",
         {
-          // Add setup_permissions to your Podfile (see iOS setup - steps 1, 2 and 3)
-          "iosPermissions": ["AppTrackingTransparency", "Camera"]
+          "iosPermissions": [
+            "AppTrackingTransparency",
+            "Camera"
+          ]
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/d4fb430b-b70f-4847-9dd3-9c812d955923"
     }
   }
 }
