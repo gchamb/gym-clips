@@ -6,10 +6,12 @@ import { useAtomValue } from "jotai/react";
 import { useEffect } from "react";
 import { View, Image, Text, Dimensions } from "react-native";
 import { trackEvent } from "@aptabase/react-native";
+import DontSupport from "@/components/dont-support";
 
 export default function LandingPage() {
   const authTokens = useAtomValue(authAtom);
   const width = Dimensions.get("screen").width
+  const height = Dimensions.get("screen").height;
 
   useEffect(() => {
     trackEvent("app_open");
@@ -22,9 +24,15 @@ export default function LandingPage() {
     return <Redirect href="/(auth)/onboarding" />;
   }
 
+  if (height < 800){
+    return <DontSupport />
+  }
+
+ 
+
   return (
     <EgoistView className="justify-center space-y-8">
-      <View className={`mt-20 ${ width <= 375 ? 'w-[150px] h-[150px]' : 'w-[200px] h-[200px]'} rounded-2xl  mx-auto justify-center items-center`}>
+      <View className={`mt-20 w-[200px] h-[200px] rounded-2xl  mx-auto justify-center items-center`}>
         <Image
           source={require("@/assets/images/egoist-logo.png")}
           className="w-full h-full"
