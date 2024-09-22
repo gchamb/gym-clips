@@ -91,7 +91,7 @@ export default function Onboarding() {
         </Text>
 
         <PictureCapture liftImage={(image) => setProgressImage(image)} />
-
+ 
         <View className="space-y-8">
           <View className="space-y-4">
             <Text className="text-xl font-semibold text-egoist-white">
@@ -140,17 +140,19 @@ export default function Onboarding() {
               />
             </View>
           </View>
-
-          <Button
-            className="p-6"
-            text="Start"
-            onPress={completeOnboarding}
-            disabled={loading}
-            isLoading={loading}
-          />
-          {error !== "" && (
-            <Text className="text-sm text-red-700 text-center">{error}</Text>
-          )}
+          <View className="space-y-2">
+            <Button
+              className="p-6"
+              text="Start"
+              onPress={completeOnboarding}
+              disabled={loading}
+              isLoading={loading}
+            />
+            {error !== "" && (
+              <Text className="text-sm text-red-700 text-center">{error}</Text>
+            )}
+          </View>
+      
         </View>
       </View>
     </EgoistView>

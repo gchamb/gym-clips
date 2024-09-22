@@ -214,7 +214,7 @@ export default function Settings() {
           )}
         </View>
 
-        <View className="my-auto space-y-4">
+        <View className="mt-4 space-y-4">
           <Button
             className="p-4"
             text="Change Goal Weight"

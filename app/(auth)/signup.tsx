@@ -12,10 +12,10 @@ export default function SignUp() {
         <View className="mt-20 w-[150px] rounded-2xl h-[150px] mx-auto  justify-center items-center">
           <Image
             source={require("@/assets/images/egoist-logo.png")}
-            width={150}
-            height={150}
+            className="w-full h-full"
           />
-        </View>
+        </View> 
+        
 
         <View>
           <EmailSubmit type="Sign up" />

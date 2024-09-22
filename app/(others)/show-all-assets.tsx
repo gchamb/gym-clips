@@ -14,6 +14,7 @@ import {
   Image,
   FlatList,
   Pressable,
+  Dimensions,
 } from "react-native";
 import { getAssets } from "@/lib/query-functions";
 import { useQuery } from "@tanstack/react-query";
@@ -73,7 +74,7 @@ export default function ShowAllAssets() {
       />
     );
   }
-
+  console.log(Dimensions.get("screen").width)
   return (
     <EgoistView>
       {selectedAsset !== null && (
@@ -99,7 +100,7 @@ export default function ShowAllAssets() {
                     //   itemVisiblePercentThreshold: 40,
                     waitForInteraction: false,
                   }}
-                  numColumns={5}
+                  numColumns={Dimensions.get("screen").width > 400 ? 5 : 4}
                   renderItem={({ item }) => {
                     return (
                       <Pressable
@@ -187,6 +188,7 @@ export default function ShowAllAssets() {
                   item={item}
                   onPress={() => setSelectedAsset(item)}
                   color="red"
+                  makeLarge
                 />
               )}
             />

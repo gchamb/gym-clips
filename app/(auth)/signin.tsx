@@ -40,6 +40,8 @@ export default function Auth() {
 
   const setAuthTokens = useSetAtom(authAtom);
 
+  const width = Dimensions.get("screen").width
+
   const signInWithGoogle = async () => {
     try {
       // Check if your device supports Google Play
@@ -92,7 +94,8 @@ export default function Auth() {
         className="flex-1 w-11/12 mx-auto"
       >
         {!hideImageCarousel && (
-          <View className="mt-6">
+         
+      <View>
             <Carousel
               width={Dimensions.get("screen").width}
               height={300}
