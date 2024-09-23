@@ -1,5 +1,6 @@
 import mobileAds from "react-native-google-mobile-ads";
-import * as SplashScreen from "expo-splash-screen";
+// import * as SplashScreen from "expo-splash-screen";
+// import { SplashScreen } from "expo-router";
 import * as Sentry from "@sentry/react-native";
 import Purchases from "react-native-purchases";
 import sanitizedConfig from "@/config";
@@ -13,7 +14,7 @@ import { useEffect } from "react";
 import { Platform } from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync().catch(err => Sentry.captureException(err));
 
 const queryClient = new QueryClient();
 

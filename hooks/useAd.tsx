@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAtom, useAtomValue } from "jotai/react";
 import { useEffect, useState } from "react";
 import { useInterstitialAd, TestIds } from "react-native-google-mobile-ads";
+import { captureException } from "@sentry/react-native";
 
 export default function useAd() {
   const tracking = useAtomValue(trackingAtom);
@@ -43,11 +44,14 @@ export default function useAd() {
   }, [majorInteractions, data, isLoaded]);
 
   useEffect(() => {
+    if (error){
+      captureException(error)
+    }
     if (isClosed) {
       setIsTimeToShowAd(false);
       setMajorInteractions(0);
     }
-  }, [isClosed]);
+  }, [isClosed, error]);
 
   return {
     isTimeToShowAd,
