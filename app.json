@@ -4,7 +4,7 @@
     "slug": "egoist",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/app-icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "extra": {
@@ -14,11 +14,11 @@
     },
     "splash": {
       "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "cover",
+      "backgroundColor": "#151515"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.gchamb.egoist"
     },
     "android": {
@@ -26,9 +26,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ]
+      "permissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
       "bundler": "metro",
@@ -111,10 +109,7 @@
       [
         "react-native-permissions",
         {
-          "iosPermissions": [
-            "AppTrackingTransparency",
-            "Camera"
-          ]
+          "iosPermissions": ["AppTrackingTransparency", "Camera"]
         }
       ]
     ],
