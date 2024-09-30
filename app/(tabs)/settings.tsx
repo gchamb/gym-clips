@@ -163,12 +163,12 @@ export default function Settings() {
                   Weekly Progress Videos
                 </Text>
               </View>
-              <View className="flex flex-row space-x-4">
+              {/* <View className="flex flex-row space-x-4">
                 <Feather name="check" color="#A91D3A" size={32} />
                 <Text className="text-egoist-white text-lg">
                   Weekly Progress Reports
                 </Text>
-              </View>
+              </View> */}
               <View className="flex flex-row space-x-4">
                 <Feather name="check" color="#A91D3A" size={32} />
                 <Text className="text-egoist-white text-lg">No Ads</Text>
@@ -192,12 +192,12 @@ export default function Settings() {
                     Weekly Progress Videos
                   </Text>
                 </View>
-                <View className="flex flex-row space-x-4">
+                {/* <View className="flex flex-row space-x-4">
                   <Feather name="check" color="#A91D3A" size={32} />
                   <Text className="text-egoist-white text-lg">
                     Weekly Progress Reports
                   </Text>
-                </View>
+                </View> */}
                 <View className="flex flex-row space-x-4">
                   <Feather name="check" color="#A91D3A" size={32} />
                   <Text className="text-egoist-white text-lg">No Ads</Text>
