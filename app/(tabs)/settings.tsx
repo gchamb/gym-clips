@@ -146,7 +146,7 @@ export default function Settings() {
                 }
 
                 return (
-                  <Text className="text-2xl text-egoist-red font-bold">
+                  <Text key={sku} className="text-2xl text-egoist-red font-bold">
                     {skusTiers[sku]}
                   </Text>
                 );
