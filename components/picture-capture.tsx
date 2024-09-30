@@ -35,7 +35,6 @@ export default function PictureCapture(props: {
     if (permission === null) return;
 
     try {
-      console.log(permission);
       if (permission.canAskAgain) {
         const newPermission = await requestPermission();
         console.log(newPermission, "heere");
