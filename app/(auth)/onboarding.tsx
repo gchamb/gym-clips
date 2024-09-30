@@ -4,8 +4,8 @@ import Dropdown from "@/components/ui/dropdown";
 import EgoistView from "@/components/ui/egoist-view";
 import sanitizedConfig from "@/config";
 import * as Sentry from "@sentry/react-native";
+import EgoistCamera from "@/components/camera";
 
-import { ImagePickerAsset } from "expo-image-picker";
 import { authAtom } from "@/stores/auth";
 import { Href, router } from "expo-router";
 import { useAtom } from "jotai/react";
@@ -14,16 +14,17 @@ import { Text, View } from "react-native";
 import { AuthTokens } from "@/types";
 import { getAndUploadImage, weights } from "@/lib/helpers";
 import { trackEvent } from "@aptabase/react-native";
+import { CameraCapturedPicture } from "expo-camera";
 
 export default function Onboarding() {
   const [goalWeight, setGoalWeight] = useState<number>();
   const [currentWeight, setCurrentWeight] = useState<number>();
-  const [progressImage, setProgressImage] = useState<ImagePickerAsset | null>(
-    null
-  );
+  const [progressImage, setProgressImage] =
+    useState<CameraCapturedPicture | null>(null);
   const [authTokens, setAuthTokens] = useAtom(authAtom);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showCamera, setShowCamera] = useState(false);
 
   const completeOnboarding = async () => {
     if (
@@ -83,6 +84,16 @@ export default function Onboarding() {
     }
   };
 
+  if (showCamera) {
+    return (
+      <EgoistCamera
+        presentation="screen"
+        onClose={() => setShowCamera(false)}
+        liftImage={(image) => setProgressImage(image)}
+      />
+    );
+  }
+
   return (
     <EgoistView>
       <View className="w-11/12 mx-auto space-y-12">
@@ -90,8 +101,10 @@ export default function Onboarding() {
           Take Progress Picture
         </Text>
 
-        <PictureCapture liftImage={(image) => setProgressImage(image)} />
- 
+        <PictureCapture
+          default={progressImage?.uri}
+          openCamera={() => setShowCamera(true)}
+        />
         <View className="space-y-8">
           <View className="space-y-4">
             <Text className="text-xl font-semibold text-egoist-white">
@@ -152,7 +165,6 @@ export default function Onboarding() {
               <Text className="text-sm text-red-700 text-center">{error}</Text>
             )}
           </View>
-      
         </View>
       </View>
     </EgoistView>

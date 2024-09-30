@@ -140,7 +140,9 @@ export default function Home() {
 
           <View className="h-[300px] w-[200px] mx-auto flex justify-center items-center">
             {isLoading && <PictureCapture showOnlySkeleton />}
-            {!isLoading && data?.entries.length === 0 && <PictureCapture />}
+            {!isLoading && data?.entries.length === 0 && (
+              <PictureCapture openDailyEntry />
+            )}
             {data !== undefined && data.entries.length > 0 && (
               <Carousel
                 width={Dimensions.get("screen").width}
