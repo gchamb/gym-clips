@@ -1,8 +1,8 @@
 import sanitizedConfig from "@/config";
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { ImagePickerAsset } from "expo-image-picker";
 import { AuthTokens } from "@/types";
+import { CameraCapturedPicture } from "expo-camera";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -31,12 +31,12 @@ export const Months = [
 export const weights = Array.from({ length: 431 }, (_, i) => `${i + 70} lbs`);
 
 export async function getAndUploadImage(
-  image: ImagePickerAsset,
+  image: CameraCapturedPicture,
   tokens: AuthTokens
 ) {
   // request for sas url
   const awsResponse = await fetch(
-    `${sanitizedConfig.API_URL}/api/v1/aws/upload?mimetype=${image.mimeType}`,
+    `${sanitizedConfig.API_URL}/api/v1/aws/upload?mimetype=image/jpeg`,
     {
       headers: {
         Authorization: `Bearer ${tokens?.jwt_token}`,

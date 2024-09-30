@@ -26,9 +26,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ]
+      "permissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
       "bundler": "metro",
@@ -47,6 +45,12 @@
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share your progress pics."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Egoist to access your camera"
         }
       ],
       [
@@ -111,10 +115,7 @@
       [
         "react-native-permissions",
         {
-          "iosPermissions": [
-            "AppTrackingTransparency",
-            "Camera"
-          ]
+          "iosPermissions": ["AppTrackingTransparency", "Camera"]
         }
       ],
       "expo-font"
