@@ -4,7 +4,7 @@ import Dropdown from "@/components/ui/dropdown";
 import EgoistView from "@/components/ui/egoist-view";
 import BannerAd from "@/components/ui/banner-ad";
 import sanitizedConfig from "@/config";
-import { ImagePickerAsset } from "expo-image-picker";
+import EgoistCamera from "./camera";
 import { getAndUploadImage, Months, weights } from "@/lib/helpers";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -15,6 +15,7 @@ import { majorInteractionsAtom } from "@/stores/tracking";
 import { getAssets } from "@/lib/query-functions";
 import { useQuery } from "@tanstack/react-query";
 import { trackEvent } from "@aptabase/react-native";
+import { CameraCapturedPicture } from "expo-camera";
 
 const date = new Date();
 
@@ -28,7 +29,8 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
   const [currentWeight, setCurrentWeight] = useState<number>();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [image, setImage] = useState<ImagePickerAsset | null>(null);
+  const [image, setImage] = useState<CameraCapturedPicture | null>(null);
+  const [showCamera, setShowCamera] = useState(false);
 
   const authTokens = useAtomValue(authAtom);
   const setMajorInteractions = useSetAtom(majorInteractionsAtom);
@@ -94,6 +96,16 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
     }
   };
 
+  if (showCamera) {
+    return (
+      <EgoistCamera
+        presentation={props.presentation}
+        onClose={() => setShowCamera(false)}
+        liftImage={(image) => setImage(image)}
+      />
+    );
+  }
+
   return (
     <EgoistView>
       <View
@@ -110,7 +122,10 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
           </Text>
         </View>
         <View />
-        <PictureCapture liftImage={(image) => setImage(image)} />
+        <PictureCapture
+          default={image?.uri}
+          openCamera={() => setShowCamera(true)}
+        />
         <View className="space-y-4">
           <Text className="text-white text-xl font-semibold">
             Current Weight

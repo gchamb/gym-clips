@@ -2,10 +2,10 @@ import * as ExpoImagePicker from "expo-image-picker";
 import * as Sentry from "@sentry/react-native";
 
 import Button from "./ui/button";
-import { useState } from "react";
-import { View, Image, Pressable } from "react-native";
+import { View, Image, Pressable, Linking } from "react-native";
 import { router } from "expo-router";
 import { Skeleton } from "@rneui/themed";
+import { useCameraPermissions } from "expo-camera";
 
 // ik ik just makes it easier for my brain
 function Cross() {
@@ -22,9 +22,9 @@ export default function PictureCapture(props: {
   default?: string;
   openDailyEntry?: boolean;
   showOnlySkeleton?: boolean;
+  openCamera?: () => void;
 }) {
-  const [selectedAsset, setSelectedAsset] =
-    useState<ExpoImagePicker.ImagePickerAsset | null>(null);
+  const [permission, requestPermission] = useCameraPermissions();
 
   const pickImage = async () => {
     if (props?.openDailyEntry) {
@@ -32,26 +32,24 @@ export default function PictureCapture(props: {
       return;
     }
 
+    if (permission === null) return;
+
     try {
-      const cameraPermissions =
-        await ExpoImagePicker.requestCameraPermissionsAsync();
-
-      if (!cameraPermissions.granted) {
+      console.log(permission);
+      if (permission.canAskAgain) {
+        const newPermission = await requestPermission();
+        console.log(newPermission, "heere");
+        if (!newPermission.granted) {
+          return;
+        }
+      } else {
+        // redirect to settings page
+        await Linking.openURL("app-settings:");
         return;
       }
 
-      const result = await ExpoImagePicker.launchCameraAsync({
-        mediaTypes: ExpoImagePicker.MediaTypeOptions.Images,
-        allowsMultipleSelection: false,
-      });
-
-      if (result.canceled || result.assets.length < 1) {
-        return;
-      }
-
-      setSelectedAsset(result.assets[0]);
-
-      props.liftImage?.(result.assets[0]);
+      // open camera or show camera
+      props.openCamera?.();
     } catch (err) {
       Sentry.captureException(err);
     }
@@ -70,7 +68,7 @@ export default function PictureCapture(props: {
 
   return (
     <>
-      {selectedAsset === null && props.default === undefined ? (
+      {props.default === undefined ? (
         <View className="border-4 border-white h-full max-h-[300px] w-[200px] mx-auto rounded-xl">
           <View className="w-full h-full relative flex">
             <View className="absolute w-full h-full z-[10]">
@@ -92,7 +90,7 @@ export default function PictureCapture(props: {
           <View className="h-full max-h-[300px] w-[200px] mx-auto ">
             <Image
               className="w-full h-full object-cover rounded-xl"
-              source={{ uri: props.default ?? selectedAsset?.uri }}
+              source={{ uri: props.default ?? "" }}
             />
           </View>
           {props.default === undefined && (
