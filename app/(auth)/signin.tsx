@@ -40,7 +40,7 @@ export default function Auth() {
 
   const setAuthTokens = useSetAtom(authAtom);
 
-  const width = Dimensions.get("screen").width
+  const width = Dimensions.get("screen").width;
 
   const signInWithGoogle = async () => {
     try {
@@ -94,35 +94,15 @@ export default function Auth() {
         className="flex-1 w-11/12 mx-auto"
       >
         {!hideImageCarousel && (
-         
-      <View>
-            <Carousel
-              width={Dimensions.get("screen").width}
-              height={300}
-              data={images}
-              scrollAnimationDuration={1000}
-              renderItem={({ item, index }) => {
-                return (
-                  <View className="w-[200px] bg-egoist-red h-[300px] mx-auto my-auto rounded-lg flex justify-center items-center">
-                    <Image
-                      key={index}
-                      className="rounded-lg"
-                      source={item}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-
-                        objectFit: "cover",
-                      }}
-                    />
-                  </View>
-                );
-              }}
+          <View className="my-auto w-[125px] rounded-2xl h-[125px] mx-auto  justify-center items-center">
+            <Image
+              source={require("@/assets/images/egoist-logo.png")}
+              className="w-full h-full"
             />
           </View>
         )}
 
-        <View className="mt-auto mb-10 space-y-4">
+        <View className="my-auto space-y-4">
           <Button onPress={signInWithGoogle} text="Sign in with Google" />
           <View className="flex flex-row items-center pb-4">
             <Separator />
