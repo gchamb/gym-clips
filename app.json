@@ -50,7 +50,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow Egoist to access your camera"
+          "cameraPermission": "The app accesses your camera to let you take your progress picture."
         }
       ],
       [

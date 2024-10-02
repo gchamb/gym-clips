@@ -26,6 +26,7 @@ export default function Settings() {
   const [authToken, setAuthAtom] = useAtom(authAtom);
   const [goalWeight, setGoalWeight] = useState("");
   const [openGoalWeightModal, setOpenGoalWeightModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -78,7 +79,41 @@ export default function Settings() {
     }
   };
 
+  const deleteAccount = async () => {
+    try {
+      setLoading(true);
+
+      if (error !== "") {
+        setError("");
+      }
+
+      const response = await fetch(`${sanitizedConfig.API_URL}/api/v1/user`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${authToken?.jwt_token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to delete account right now.");
+      }
+
+      setAuthAtom(null);
+      clearState();
+      router.replace("/");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to delete account right now."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const clearState = () => {
+    setOpenDeleteModal(false);
     setGoalWeight("");
     setOpenGoalWeightModal(false);
     setError("");
@@ -135,6 +170,39 @@ export default function Settings() {
           </BlurView>
         </Modal>
       )}
+      {openDeleteModal && (
+        <Modal transparent animationType="fade">
+          <BlurView className="flex-1">
+            <View className="bg-egoist-black w-11/12 h-1/3 m-auto rounded-2xl drop-shadow-2xl p-2 flex justify-evenly space-y-4">
+              <Text className="text-egoist-white text-3xl font-semibold text-center">
+                Delete Account
+              </Text>
+              <View className="">
+                {error !== "" && (
+                  <Text className="text-sm text-red-600 text-center">
+                    {error}
+                  </Text>
+                )}
+              </View>
+              <View className="space-y-2">
+                <Button
+                  className="p-2"
+                  text="Delete"
+                  disabled={loading}
+                  isLoading={loading}
+                  onPress={deleteAccount}
+                />
+                <Button
+                  className="p-2"
+                  text="Cancel"
+                  disabled={loading}
+                  onPress={() => clearState()}
+                />
+              </View>
+            </View>
+          </BlurView>
+        </Modal>
+      )}
       <View className="w-11/12 mx-auto flex-1">
         <View className="mt-8">
           <Text className="text-4xl text-egoist-white font-semibold">Plan</Text>
@@ -146,7 +214,10 @@ export default function Settings() {
                 }
 
                 return (
-                  <Text key={sku} className="text-2xl text-egoist-red font-bold">
+                  <Text
+                    key={sku}
+                    className="text-2xl text-egoist-red font-bold"
+                  >
                     {skusTiers[sku]}
                   </Text>
                 );
@@ -220,7 +291,7 @@ export default function Settings() {
             text="Change Goal Weight"
             onPress={() => setOpenGoalWeightModal(true)}
           />
-          {/* <Button className="p-4" text="Rate Us" /> */}
+
           <Button
             className="p-4"
             text="Share Feedback"
@@ -238,6 +309,12 @@ export default function Settings() {
               await AsyncStorage.clear();
               router.replace("/");
             }}
+          />
+          <Button
+            className="p-0 h-10 bg-transparent"
+            textClass="text-sm "
+            text="Delete Account"
+            onPress={() => setOpenDeleteModal(true)}
           />
         </View>
       </View>
