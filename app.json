@@ -19,7 +19,8 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.gchamb.egoist"
+      "bundleIdentifier": "com.gchamb.egoist",
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -35,6 +36,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-apple-authentication",
       [
         "@react-native-google-signin/google-signin",
         {

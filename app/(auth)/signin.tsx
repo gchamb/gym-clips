@@ -1,10 +1,12 @@
 import * as Sentry from "@sentry/react-native";
+import * as AppleAuthentication from "expo-apple-authentication";
 
 import Button from "@/components/ui/button";
 import EgoistView from "@/components/ui/egoist-view";
 import Separator from "@/components/ui/separator";
 import EmailSubmit from "@/components/email-submit";
 import sanitizedConfig from "@/config";
+import Purchases from "react-native-purchases";
 import { useState } from "react";
 import {
   Dimensions,
@@ -18,8 +20,7 @@ import { useSetAtom } from "jotai/react";
 import { authAtom } from "@/stores/auth";
 import { router } from "expo-router";
 import { AuthTokens } from "@/types";
-import Purchases from "react-native-purchases";
-import Carousel from "react-native-reanimated-carousel";
+// import Carousel from "react-native-reanimated-carousel";
 import { trackEvent } from "@aptabase/react-native";
 
 GoogleSignin.configure({
@@ -32,15 +33,8 @@ GoogleSignin.configure({
 
 export default function Auth() {
   const [hideImageCarousel, setHideImageCarousel] = useState(false);
-  const [images, _] = useState([
-    require("@/assets/images/carousel/lee-priest.jpg"),
-    require("@/assets/images/carousel/arnold.jpeg"),
-    require("@/assets/images/carousel/chris-1.webp"),
-  ]);
 
   const setAuthTokens = useSetAtom(authAtom);
-
-  const width = Dimensions.get("screen").width;
 
   const signInWithGoogle = async () => {
     try {
@@ -87,6 +81,53 @@ export default function Auth() {
     }
   };
 
+  const signInWithApple = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      const { identityToken } = credential;
+
+      if (identityToken === null) {
+        throw new Error("identity Token wasn't created.");
+      }
+
+      // validate and call to our backend
+      const endpoint = `${sanitizedConfig.API_URL}/api/v1/auth/apple`;
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          Authorization: identityToken,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to sign in with apple.");
+      }
+
+      const authRes = (await response.json()) as NonNullable<AuthTokens>;
+
+      setAuthTokens(authRes);
+
+      await Purchases.logIn(authRes.uid);
+
+      trackEvent("sign_in", { method: "apple" });
+
+      if (authRes.is_onboarded) {
+        router.replace("/home");
+      } else {
+        router.replace("/(auth)/onboarding");
+      }
+    } catch (err) {
+      Sentry.captureException(err);
+    }
+  };
+
   return (
     <EgoistView>
       <KeyboardAvoidingView
@@ -104,6 +145,7 @@ export default function Auth() {
 
         <View className="my-auto space-y-4">
           <Button onPress={signInWithGoogle} text="Sign in with Google" />
+          <Button onPress={signInWithApple} text="Sign in with Apple" />
           <View className="flex flex-row items-center pb-4">
             <Separator />
             <Text className="text-egoist-white text-lg px-4">or</Text>
