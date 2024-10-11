@@ -17,6 +17,7 @@ import { authAtom } from "@/stores/auth";
 import { skusTiers } from "@/types";
 import { useState } from "react";
 import { BlurView } from "expo-blur";
+import { trackEvent } from "@aptabase/react-native";
 
 export default function Settings() {
   const { isLoading, data, refetch } = useQuery({
@@ -97,7 +98,7 @@ export default function Settings() {
       if (!response.ok) {
         throw new Error("Unable to delete account right now.");
       }
-
+      trackEvent("delete_account");
       setAuthAtom(null);
       clearState();
       router.replace("/");
