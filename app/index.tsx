@@ -52,9 +52,9 @@ export default function LandingPage() {
     trackEvent("app_open");
   }, []);
 
-  // if (authTokens?.is_onboarded) {
-  //   return <Redirect href="/(tabs)/home" />;
-  // }
+  if (authTokens) {
+    return <Redirect href="/(tabs)/home" />;
+  }
   // if (authTokens?.is_onboarded === false) {
   //   return <Redirect href="/(auth)/onboarding" />;
   // }

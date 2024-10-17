@@ -7,11 +7,13 @@ import sanitizedConfig from "@/config";
 import Aptabase, { trackEvent } from "@aptabase/react-native";
 import "react-native-reanimated";
 
-import { Stack, usePathname } from "expo-router";
+import { router, Stack, usePathname } from "expo-router";
 import { PortalHost } from "@/components/primitives/portal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Platform } from "react-native";
+import { useAtom } from "jotai/react";
+import { authAtom } from "@/stores/auth";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 // SplashScreen.preventAutoHideAsync().catch(err => Sentry.captureException(err));
@@ -28,6 +30,7 @@ Aptabase.init(sanitizedConfig.APTABASE_API_KEY);
 
 export default function RootLayout() {
   const pathname = usePathname();
+  const [auth, setAuth] = useAtom(authAtom);
   useEffect(() => {
     trackEvent("screen_tracking", { screen: pathname });
   }, [pathname]);
@@ -53,7 +56,39 @@ export default function RootLayout() {
         .catch((err) => Sentry.captureException(err));
     };
 
+    const validateJwt = async () => {
+      if (auth === null) {
+        return;
+      }
+
+      try {
+        // validate the current jwt token
+        const endpoint = `${sanitizedConfig.API_URL}/api/v1/auth/refresh`;
+        const response = await fetch(endpoint, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${auth.refresh_token}`,
+          },
+        });
+
+        if (!response.ok) {
+          setAuth(null);
+          router.replace("/");
+          return;
+        }
+
+        const { jwt_token } = (await response.json()) as { jwt_token: string };
+
+        const { jwt_token: temp_token, ...rest } = auth;
+
+        setAuth({ jwt_token, ...rest });
+      } catch (err) {
+        Sentry.captureException(err);
+      }
+    };
+
     inititalize();
+    validateJwt();
   }, []);
 
   return (
