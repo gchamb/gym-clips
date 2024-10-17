@@ -45,9 +45,7 @@ export default function TabsLayout() {
             return (
               <View className="pr-8">
                 <Text className="text-egoist-white text-xl font-bold">
-                  {isLoading
-                    ? "Loading User Data"
-                    : `${data?.goalWeight ?? 0} lbs`}
+                  {isLoading ? "Loading..." : `${data?.goalWeight ?? 0} lbs`}
                 </Text>
               </View>
             );
