@@ -84,9 +84,6 @@ export default function Home() {
         if (result === RESULTS.GRANTED) {
           setTracking(true);
         }
-
-        // notifications
-        await registerForPushNotificationsAsync();
       } catch (err) {
         captureException(err);
       }
@@ -94,6 +91,8 @@ export default function Home() {
 
     const onInit = async () => {
       await checkForPermissions();
+      // notifications
+      await registerForPushNotificationsAsync();
     };
     onInit();
   }, []);
