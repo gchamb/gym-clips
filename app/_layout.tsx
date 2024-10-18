@@ -2,6 +2,7 @@ import mobileAds from "react-native-google-mobile-ads";
 // import * as SplashScreen from "expo-splash-screen";
 // import { SplashScreen } from "expo-router";
 import * as Sentry from "@sentry/react-native";
+import * as Notifications from "expo-notifications";
 import Purchases from "react-native-purchases";
 import sanitizedConfig from "@/config";
 import Aptabase, { trackEvent } from "@aptabase/react-native";
@@ -14,11 +15,20 @@ import { useEffect } from "react";
 import { Platform } from "react-native";
 import { useAtom } from "jotai/react";
 import { authAtom } from "@/stores/auth";
+import { useNotifications } from "@/hooks/expo";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 // SplashScreen.preventAutoHideAsync().catch(err => Sentry.captureException(err));
 
 const queryClient = new QueryClient();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 Sentry.init({
   dsn: "https://a38a1ffadde38ebe85e20f70defbffd3@o4505398186541056.ingest.us.sentry.io/4507977137979392",
@@ -31,6 +41,7 @@ Aptabase.init(sanitizedConfig.APTABASE_API_KEY);
 export default function RootLayout() {
   const pathname = usePathname();
   const [auth, setAuth] = useAtom(authAtom);
+  const { handleNotificationResponse } = useNotifications();
   useEffect(() => {
     trackEvent("screen_tracking", { screen: pathname });
   }, [pathname]);
@@ -89,6 +100,17 @@ export default function RootLayout() {
 
     inititalize();
     validateJwt();
+
+    const responseListener =
+      Notifications.addNotificationResponseReceivedListener(
+        handleNotificationResponse
+      );
+
+    return () => {
+      if (responseListener) {
+        Notifications.removeNotificationSubscription(responseListener);
+      }
+    };
   }, []);
 
   return (
