@@ -113,11 +113,7 @@ export default function SignIn() {
 
       trackEvent("sign_in", { method: "apple" });
 
-      if (authRes.is_onboarded) {
-        router.replace("/home");
-      } else {
-        router.replace("/(auth)/onboarding");
-      }
+      router.replace("/home");
     } catch (err) {
       Sentry.captureException(err);
     }
