@@ -1,11 +1,9 @@
 import * as ExpoImagePicker from "expo-image-picker";
-import * as Sentry from "@sentry/react-native";
 
 import Button from "./ui/button";
 import { View, Image, Linking, AppState } from "react-native";
 import { router } from "expo-router";
 import { Skeleton } from "@rneui/themed";
-import { useCameraPermissions } from "expo-camera";
 import { focusManager } from "@tanstack/react-query";
 import PictureCaptureUI from "./ui/picture-capture-ui";
 import { useEffect } from "react";
@@ -17,34 +15,13 @@ export default function PictureCapture(props: {
   showOnlySkeleton?: boolean;
   openCamera?: () => void;
 }) {
-  const [permission, requestPermission] = useCameraPermissions();
-
   const pickImage = async () => {
     if (props?.openDailyEntry) {
       router.push("/daily-entry");
       return;
     }
-
-    if (permission === null) return;
-
-    try {
-      if (permission.canAskAgain) {
-        const newPermission = await requestPermission();
-        console.log(newPermission, "heere");
-        if (!newPermission.granted) {
-          return;
-        }
-      } else {
-        // redirect to settings page
-        await Linking.openURL("app-settings:");
-        return;
-      }
-
-      // open camera or show camera
-      props.openCamera?.();
-    } catch (err) {
-      Sentry.captureException(err);
-    }
+    // open camera or show camera
+    props.openCamera?.();
   };
 
   useEffect(() => {
@@ -75,7 +52,9 @@ export default function PictureCapture(props: {
           <View className="h-full max-h-[300px] w-[200px] mx-auto ">
             <Image
               className="w-full h-full object-cover rounded-xl"
-              source={{ uri: focusManager.isFocused() ? props.default : "" }}
+              source={{
+                uri: focusManager.isFocused() && props.default ? props.default : undefined,
+              }}
             />
           </View>
           {props.default === undefined && (
