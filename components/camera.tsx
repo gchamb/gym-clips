@@ -37,7 +37,7 @@ export default function EgoistCamera(props: {
     start: boolean;
     timer: number | null;
   }>({ start: false, timer: null });
-  console.log("camera is ready");
+  
   const camera = useRef<CameraView | null>(null);
 
   useEffect(() => {
@@ -88,7 +88,7 @@ export default function EgoistCamera(props: {
       captureException(err);
     }
   };
-  console.log(permission);
+  
   const toggleCameraFacing = () => {
     setFacing((current) => (current === "back" ? "front" : "back"));
   };

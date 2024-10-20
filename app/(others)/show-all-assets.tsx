@@ -74,7 +74,7 @@ export default function ShowAllAssets() {
       />
     );
   }
-  console.log(Dimensions.get("screen").width)
+  
   return (
     <EgoistView>
       {selectedAsset !== null && (

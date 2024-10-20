@@ -1,5 +1,8 @@
-import Button from "@/components/ui/button";
 import EgoistView from "@/components/ui/egoist-view";
+import React from "react";
+import SignIn from "@/components/sign-in";
+import DontSupport from "@/components/dont-support";
+
 import { authAtom } from "@/stores/auth";
 import { Redirect, router } from "expo-router";
 import { useAtomValue } from "jotai/react";
@@ -10,15 +13,12 @@ import {
   Text,
   Dimensions,
   Animated,
-  StyleSheet,
   FlatList,
 } from "react-native";
 import { trackEvent } from "@aptabase/react-native";
 import PictureCaptureUI from "@/components/ui/picture-capture-ui";
 import { SlidingDot } from "react-native-animated-pagination-dots";
-import React from "react";
-import Auth from "./(auth)/signin";
-import SignIn from "@/components/sign-in";
+
 
 const introduction = [
   {
@@ -59,12 +59,12 @@ export default function LandingPage() {
   //   return <Redirect href="/(auth)/onboarding" />;
   // }
 
-  // if (height < 800){
-  //   return <DontSupport />
-  // }
+  if (height < 800){
+    return <DontSupport />
+  }
 
   return (
-    <EgoistView className="justify-center space-y-8">
+    <EgoistView className="">
       <FlatList
         data={introduction}
         keyExtractor={(item) => item.key}
@@ -85,8 +85,8 @@ export default function LandingPage() {
           }
 
           return (
-            <View style={{ width: width }} className="h-4/5 space-y-16">
-              <View className="my-10">
+            <View style={{ width: width }} className="h-4/5 space-y-8">
+              <View className="mt-10 mb-4">
                 <View className="w-[75px] rounded-2xl h-[75px] mx-auto  justify-center items-center">
                   <Image
                     source={require("@/assets/images/egoist-logo.png")}
@@ -105,7 +105,7 @@ export default function LandingPage() {
 
               {index === 0 && <PictureCaptureUI />}
               {item.image && (
-                <View className="max-h-[400px]">
+                <View className="h-2/3">
                   <Image
                     className="w-full h-full mx-auto object-cover"
                     source={item.image}
