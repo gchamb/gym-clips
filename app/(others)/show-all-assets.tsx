@@ -4,7 +4,12 @@ import VideoPreview from "@/components/video-preview";
 import LoadingScreen from "@/components/loading-screen";
 import ErrorScreen from "@/components/error-screen";
 
-import { formatDataByMonth, Months } from "@/lib/helpers";
+import {
+  formatDataByMonth,
+  Months,
+  isSectionList,
+  isProgressVideo,
+} from "@/lib/helpers";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -17,7 +22,7 @@ import {
   Dimensions,
 } from "react-native";
 import { getAssets } from "@/lib/query-functions";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAtomValue, useSetAtom } from "jotai/react";
 import { authAtom } from "@/stores/auth";
 import { ProgressEntry, ProgressVideo } from "@/types";
@@ -38,22 +43,57 @@ export default function ShowAllAssets() {
   const queryKey = `get${
     type === "progress-entry" ? "Entries" : "Videos"
   } ?frequency=${selectedFrequency}`;
-  const { isLoading, data, refetch, isRefetching, error } = useQuery({
-    queryKey: [queryKey],
-    queryFn: () =>
-      getAssets(authTokens, {
-        type: [type],
-        frequency: selectedFrequency,
-        take: 100,
-        page: 1,
-      }),
-  });
-  const progressEntriesByMonth = useMemo(() => {
-    if (data === undefined) return;
-    if (type !== "progress-entry") return;
 
-    return formatDataByMonth(data.entries);
-  }, [data, type]);
+  const { data, isLoading, isRefetching, refetch, error, fetchNextPage } =
+    useInfiniteQuery({
+      queryKey: [queryKey],
+      queryFn: ({ pageParam }) =>
+        getAssets(authTokens, {
+          type: [type],
+          frequency: selectedFrequency,
+          take: 100,
+          page: pageParam,
+        }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage, pages) => {
+        if (!lastPage.hasNextPage) {
+          return;
+        }
+        return pages.length + 1;
+      },
+      select: (data) => {
+        if (type === "progress-entry") {
+          const flattenedData = data.pages.flatMap((d) => {
+            return formatDataByMonth(d.entries);
+          });
+
+          const noDups: typeof flattenedData = [];
+
+          // we want no duplicate sections showing
+          for (const currentData of flattenedData) {
+            const titles = noDups.map((d) => d.title);
+            if (!titles.includes(currentData.title)) {
+              // if not a duplicate then just add
+              noDups.push(currentData);
+            } else {
+              // if there are duplicate keys then the entries have been broken into different portions
+              // based on the take value we set
+              const findDup = noDups.find((d) => d.title === currentData.title);
+              if (
+                findDup !== undefined &&
+                currentData.data[0].length !== findDup.data[0].length
+              ) {
+                findDup.data[0] = [...findDup.data[0], ...currentData.data[0]];
+              }
+            }
+          }
+
+          return noDups;
+        } else {
+          return data.pages.flatMap((p) => p.videos);
+        }
+      },
+    });
 
   useEffect(() => {
     setMajorInteractions(async (prev) => {
@@ -74,7 +114,7 @@ export default function ShowAllAssets() {
       />
     );
   }
-  
+
   return (
     <EgoistView>
       {selectedAsset !== null && (
@@ -85,11 +125,15 @@ export default function ShowAllAssets() {
         />
       )}
       <View className="w-11/12 mx-auto">
-        {type === "progress-entry" ? (
+        {type === "progress-entry" && isSectionList(data) && (
           <SectionList
-            sections={progressEntriesByMonth ?? []}
+            sections={data ?? []}
             showsVerticalScrollIndicator={false}
             // keyExtractor={(item, index) => item + index}
+            onEndReached={async () => {
+              await fetchNextPage();
+            }}
+            onEndReachedThreshold={0.3}
             renderItem={({ item }) => (
               <View className="my-6">
                 <FlatList
@@ -97,7 +141,6 @@ export default function ShowAllAssets() {
                   viewabilityConfig={{
                     minimumViewTime: 10000,
                     viewAreaCoveragePercentThreshold: 10,
-                    //   itemVisiblePercentThreshold: 40,
                     waitForInteraction: false,
                   }}
                   numColumns={Dimensions.get("screen").width > 400 ? 5 : 4}
@@ -140,44 +183,54 @@ export default function ShowAllAssets() {
               );
             }}
           />
-        ) : (
+        )}
+        {type === "progress-video" && isProgressVideo(data) && (
           <View className="space-y-8">
-            <View>
-              <View className="flex flex-row items-center space-x-2">
-                <Pressable onPress={() => setSelectedFrequency("monthly")}>
-                  <Text
-                    className={`text-4xl font-semibold ${
-                      selectedFrequency === "monthly"
-                        ? "text-egoist-white"
-                        : "text-slate-700"
-                    }`}
-                  >
-                    Monthly
-                  </Text>
-                </Pressable>
-                <Text className="text-4xl font-semibold text-egoist-white m-1">
-                  /
-                </Text>
-                <Pressable onPress={() => setSelectedFrequency("weekly")}>
-                  <Text
-                    className={`text-4xl font-semibold ${
-                      selectedFrequency === "monthly"
-                        ? "text-slate-700"
-                        : "text-egoist-white"
-                    }`}
-                  >
-                    Weekly
-                  </Text>
-                </Pressable>
-              </View>
-              <Text className="text-sm font-semibold text-egoist-white">
-                Progress Videos
-              </Text>
-            </View>
-
             <FlatList
-              data={data?.videos ?? []}
+              data={data}
               numColumns={2}
+              onEndReached={async () => {
+                await fetchNextPage();
+              }}
+              onEndReachedThreshold={0.3}
+              ListHeaderComponent={() => {
+                return (
+                  <View>
+                    <View className="flex flex-row items-center space-x-2">
+                      <Pressable
+                        onPress={() => setSelectedFrequency("monthly")}
+                      >
+                        <Text
+                          className={`text-4xl font-semibold ${
+                            selectedFrequency === "monthly"
+                              ? "text-egoist-white"
+                              : "text-slate-700"
+                          }`}
+                        >
+                          Monthly
+                        </Text>
+                      </Pressable>
+                      <Text className="text-4xl font-semibold text-egoist-white m-1">
+                        /
+                      </Text>
+                      <Pressable onPress={() => setSelectedFrequency("weekly")}>
+                        <Text
+                          className={`text-4xl font-semibold ${
+                            selectedFrequency === "monthly"
+                              ? "text-slate-700"
+                              : "text-egoist-white"
+                          }`}
+                        >
+                          Weekly
+                        </Text>
+                      </Pressable>
+                    </View>
+                    <Text className="text-sm text-center font-semibold text-egoist-white">
+                      Progress Videos
+                    </Text>
+                  </View>
+                );
+              }}
               contentContainerStyle={{
                 display: "flex",
                 justifyContent: "center",

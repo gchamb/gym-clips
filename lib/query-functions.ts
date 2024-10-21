@@ -12,6 +12,7 @@ export async function getAssets(
 ): Promise<{
   entries: ProgressEntry[];
   videos: ProgressVideo[];
+  hasNextPage: boolean;
 }> {
   const getAssetsResponse = await fetch(
     `${sanitizedConfig.API_URL}/api/v1/assets?type=${opts.type.join(
@@ -32,6 +33,7 @@ export async function getAssets(
   const data = (await getAssetsResponse.json()) as {
     entries: ProgressEntry[];
     videos: ProgressVideo[];
+    hasNextPage: boolean;
   };
 
   return data;
