@@ -65,7 +65,7 @@ export default function EmailSubmit(props: EmailSubmitProps) {
 
       trackEvent(eventName, { method: "email" });
 
-      router.replace("/home");
+      router.replace("/paywall?nextScreen=home");
     } catch (err) {
       setError("root", {
         message: err instanceof Error ? err.message : String(err),

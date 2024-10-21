@@ -70,7 +70,7 @@ export default function SignIn() {
 
       trackEvent("sign_in", { method: "google" });
 
-      router.replace("/home");
+      router.replace("/paywall?nextScreen=home");
     } catch (err) {
       Sentry.captureException(err);
     }
@@ -113,7 +113,7 @@ export default function SignIn() {
 
       trackEvent("sign_in", { method: "apple" });
 
-      router.replace("/home");
+      router.replace("/paywall?nextScreen=home");
     } catch (err) {
       Sentry.captureException(err);
     }
