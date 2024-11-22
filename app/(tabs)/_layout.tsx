@@ -53,6 +53,22 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="home2"
+        options={{
+          headerTitle: "",
+          headerTransparent: true,
+          tabBarIcon: ({ focused }) => {
+            return (
+              <Feather
+                size={28}
+                name="anchor"
+                color={`${focused ? "white" : "#64748b"}`}
+              />
+            );
+          },
+        }}
+      />
+      <Tabs.Screen
         name="entry"
         options={{
           headerTitle: "",
