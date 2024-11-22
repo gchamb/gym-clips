@@ -25,10 +25,12 @@ import { ProgressEntry, ProgressVideo } from "@/types";
 import { trackingAtom } from "@/stores/tracking";
 import ErrorScreen from "@/components/error-screen";
 import { captureException } from "@sentry/react-native";
+import { useNotifications } from "@/hooks/expo";
 
 export default function Home() {
   const authTokens = useAtomValue(authAtom);
   const setTracking = useSetAtom(trackingAtom);
+  const { registerForPushNotificationsAsync } = useNotifications();
 
   const { isLoading, data, refetch, error } = useQuery({
     queryKey: ["getAssets"],
@@ -65,30 +67,32 @@ export default function Home() {
     return data.entries;
   }, [data?.entries, getTodaysEntryIndex]);
 
-  useEffect(() => {
-    const checkForPermissions = async () => {
-      try {
-        const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
-        if (result !== RESULTS.GRANTED) {
-          // The permission has not been requested, so request it.
-          const status = await request(
-            PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY
-          );
+  const checkForPermissions = async () => {
+    try {
+      // tracking
+      const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
+      if (result !== RESULTS.GRANTED) {
+        // The permission has not been requested, so request it.
+        const status = await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
 
-          setTracking(status === RESULTS.GRANTED ? true : false);
-        }
-
-        if (result === RESULTS.GRANTED) {
-          setTracking(true);
-        }
-      } catch (err) {
-        captureException(err);
+        setTracking(status === RESULTS.GRANTED ? true : false);
       }
-    };
 
+      if (result === RESULTS.GRANTED) {
+        setTracking(true);
+      }
+    } catch (err) {
+      captureException(err);
+    }
+  };
+
+  useEffect(() => {
     const onInit = async () => {
       await checkForPermissions();
+      // notifications
+      await registerForPushNotificationsAsync();
     };
+
     onInit();
   }, []);
 

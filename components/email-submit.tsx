@@ -65,11 +65,7 @@ export default function EmailSubmit(props: EmailSubmitProps) {
 
       trackEvent(eventName, { method: "email" });
 
-      if (authRes.is_onboarded) {
-        router.replace("/home");
-      } else {
-        router.replace("/(auth)/onboarding");
-      }
+      router.replace("/paywall?nextScreen=home");
     } catch (err) {
       setError("root", {
         message: err instanceof Error ? err.message : String(err),

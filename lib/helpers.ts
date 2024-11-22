@@ -1,7 +1,7 @@
 import sanitizedConfig from "@/config";
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { AuthTokens } from "@/types";
+import { AuthTokens, ProgressVideo } from "@/types";
 import { CameraCapturedPicture } from "expo-camera";
 
 export function cn(...inputs: ClassValue[]) {
@@ -111,6 +111,30 @@ export function formatDataByMonth<T extends { createdAt: string }>(items: T[]) {
     const aDate = new Date(a.title);
     const bDate = new Date(b.title);
 
-    return aDate.getTime() - bDate.getTime();
+    return bDate.getTime() - aDate.getTime();
   });
+}
+
+type SectionEntryList =
+  | {
+      title: string;
+      data: {
+        id: string;
+        blobKey: string;
+        createdAt: string;
+        currentWeight: number;
+      }[][];
+    }[]
+  | undefined;
+
+type NarrowAssets = ProgressVideo[] | SectionEntryList;
+
+
+// this is for a typescript workaround
+export function isSectionList(data: NarrowAssets): data is SectionEntryList {
+  return true;
+}
+
+export function isProgressVideo(data: NarrowAssets): data is ProgressVideo[] {
+  return true;
 }
