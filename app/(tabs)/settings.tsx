@@ -1,12 +1,13 @@
 import Button from "@/components/ui/button";
 import EgoistView from "@/components/ui/egoist-view";
-import Input from "@/components/ui/input";
 import sanitizedConfig from "@/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Purchases from "react-native-purchases";
 import * as WebBrowser from "expo-web-browser";
 import useUser from "@/hooks/useUser";
 import BannerAd from "@/components/ui/banner-ad";
+import ChangeGoalWeightModal from "@/components/change-goal-weight-modal";
+
 
 import { Feather } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
@@ -20,65 +21,18 @@ import { BlurView } from "expo-blur";
 import { trackEvent } from "@aptabase/react-native";
 
 export default function Settings() {
-  const { isLoading, data, refetch } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ["customerInfo"],
     queryFn: () => Purchases.getCustomerInfo(),
   });
   const [authToken, setAuthAtom] = useAtom(authAtom);
-  const [goalWeight, setGoalWeight] = useState("");
   const [openGoalWeightModal, setOpenGoalWeightModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { refetch: refetchUser } = useUser();
-
-  const saveChangedGoalWeight = async () => {
-    if (goalWeight === "") {
-      setError("Must enter in a value");
-      return;
-    }
-
-    const castedGoalWeight = parseInt(goalWeight);
-    if (castedGoalWeight < 70 || castedGoalWeight > 500) {
-      setError("Invalid goal weight");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      if (error !== "") {
-        setError("");
-      }
-
-      const response = await fetch(
-        `${sanitizedConfig.API_URL}/api/v1/user/update`,
-        {
-          method: "PATCH",
-          body: JSON.stringify({ goal_weight: castedGoalWeight }),
-          headers: {
-            Authorization: `Bearer ${authToken?.jwt_token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Unable to save goal weight");
-      }
-
-      await refetchUser();
-
-      clearState();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Unable to save goal weight"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { refetch } = useUser();
 
   const deleteAccount = async () => {
     try {
@@ -115,7 +69,6 @@ export default function Settings() {
 
   const clearState = () => {
     setOpenDeleteModal(false);
-    setGoalWeight("");
     setOpenGoalWeightModal(false);
     setError("");
   };
@@ -132,44 +85,10 @@ export default function Settings() {
   return (
     <EgoistView>
       {openGoalWeightModal && (
-        <Modal transparent animationType="fade">
-          <BlurView className="flex-1">
-            <View className="bg-egoist-black w-11/12 h-1/3 m-auto rounded-2xl drop-shadow-2xl p-2 flex justify-evenly space-y-4">
-              <Text className="text-egoist-white text-3xl font-semibold text-center">
-                Goal Weight Change
-              </Text>
-              <View className="space-y-2">
-                {error !== "" && (
-                  <Text className="text-sm text-red-600 text-center">
-                    {error}
-                  </Text>
-                )}
-                <Input
-                  keyboardType="numeric"
-                  className="w-[100px] mx-auto text-center p-0 text-2xl text-egoist-white"
-                  currentValue={goalWeight}
-                  onChangeText={(text) => setGoalWeight(text)}
-                  placeholder="115"
-                />
-              </View>
-              <View className="space-y-2">
-                <Button
-                  className="p-2"
-                  text="Save"
-                  disabled={loading}
-                  isLoading={loading}
-                  onPress={saveChangedGoalWeight}
-                />
-                <Button
-                  className="p-2"
-                  text="Cancel"
-                  disabled={loading}
-                  onPress={() => clearState()}
-                />
-              </View>
-            </View>
-          </BlurView>
-        </Modal>
+        <ChangeGoalWeightModal
+          onClose={() => setOpenGoalWeightModal(false)}
+          onComplete={async () => await refetch()}
+        />
       )}
       {openDeleteModal && (
         <Modal transparent animationType="fade">

@@ -21,7 +21,7 @@ const date = new Date();
 
 export default function Entry(props: { presentation: "screen" | "modal" }) {
   const { refetch: refetchAssets } = useQuery({
-    queryKey: ["getAssets"],
+    queryKey: ["getAssets2"],
     queryFn: () => getAssets(authTokens),
     enabled: false,
   });
@@ -82,7 +82,7 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
       if (router.canDismiss()) {
         router.dismiss();
       } else {
-        router.replace("/home");
+        router.replace("/home2");
       }
     } catch (err) {
       setError(
