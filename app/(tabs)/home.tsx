@@ -304,7 +304,7 @@ export default function Home() {
 
           {assetData && assetData.entries.length > 0 && (
             <Link
-              href="/(others)/show-all-assets?type=progress-entry"
+              href="/show-all-assets?type=progress-entry"
               className="text-white text-xl text-center underline"
             >
               View All

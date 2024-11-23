@@ -130,15 +130,6 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
-            name="(others)/show-all-assets"
-            options={{
-              headerTitle: "",
-              headerTransparent: true,
-              presentation: "modal",
-              headerShown: true,
-            }}
-          />
-          <Stack.Screen
             name="(others)/how-to"
             options={{
               headerTitle: "",

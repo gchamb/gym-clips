@@ -31,6 +31,22 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="show-all-assets"
+        options={{
+          headerTitle: "",
+          headerTransparent: true,
+          tabBarIcon: ({ focused }) => {
+            return (
+              <Feather
+                size={28}
+                name="file"
+                color={`${focused ? "white" : "#64748b"}`}
+              />
+            );
+          },
+        }}
+      />
+      <Tabs.Screen
         name="entry"
         options={{
           headerTitle: "",
