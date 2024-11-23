@@ -83,7 +83,7 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
       if (router.canDismiss()) {
         router.dismiss();
       } else {
-        router.replace("/home2");
+        router.replace("/home?type=entry-success");
       }
     } catch (err) {
       setError(
