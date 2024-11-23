@@ -27,8 +27,6 @@ import { Audio } from "expo-av";
 
 export default function Home2() {
   const { type } = useLocalSearchParams<{ type?: string }>();
-  console.log("type", type);
-  // const type = "entry-success";
 
   const confettiRef = useRef<LottieView>(null);
   const [selectedAsset, setSelectedAsset] = useState<ProgressEntry | null>(
@@ -40,7 +38,7 @@ export default function Home2() {
   const authTokens = useAtomValue(authAtom);
   const setMajorInteractions = useSetAtom(majorInteractionsAtom);
   const { isLoading: isAssetLoading, data: assetData } = useQuery({
-    queryKey: ["getAssets2"],
+    queryKey: ["getAssets"],
     queryFn: () =>
       getAssets(authTokens, {
         type: ["progress-entry"],

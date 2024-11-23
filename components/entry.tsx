@@ -21,7 +21,7 @@ const date = new Date();
 
 export default function Entry(props: { presentation: "screen" | "modal" }) {
   const { refetch: refetchAssets } = useQuery({
-    queryKey: ["getAssets2"],
+    queryKey: ["getAssets"],
     queryFn: () => getAssets(authTokens),
     enabled: false,
   });
