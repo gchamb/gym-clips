@@ -73,6 +73,7 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
 
       if (!addEntryRes.ok) {
         setError("Unable to add entry. Try again.");
+        return;
       }
 
       trackEvent("entry");
