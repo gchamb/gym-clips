@@ -10,13 +10,6 @@ export function useNotifications() {
   const auth = useAtomValue(authAtom);
   async function registerForPushNotificationsAsync() {
     try {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
-
-      if (existingStatus === "granted") {
-        return;
-      }
-
       await Notifications.requestPermissionsAsync();
       const token = (
         await Notifications.getExpoPushTokenAsync({
