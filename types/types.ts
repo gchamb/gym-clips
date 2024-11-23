@@ -29,6 +29,7 @@ export type AuthTokens = {
 export type UserData = {
   currentWeight: number;
   goalWeight: number;
+  streak: number;
 } | null;
 
 export type AuthSchema = z.infer<typeof authFormSchema>;

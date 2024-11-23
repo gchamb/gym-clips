@@ -10,8 +10,8 @@ import {
   isSectionList,
   isProgressVideo,
 } from "@/lib/helpers";
-import { useLocalSearchParams } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   SectionList,
   Text,
@@ -32,13 +32,13 @@ export default function ShowAllAssets() {
   const authTokens = useAtomValue(authAtom);
   const setMajorInteractions = useSetAtom(majorInteractionsAtom);
 
-  const { type } = useLocalSearchParams<{ type: string }>();
+  const { type = "progress-entry" } = useLocalSearchParams<{ type: string }>();
   const [selectedAsset, setSelectedAsset] = useState<
     ProgressEntry | ProgressVideo | null
   >(null);
   const [selectedFrequency, setSelectedFrequency] = useState<
     "monthly" | "weekly"
-  >("monthly");
+  >("weekly");
 
   const queryKey = `get${
     type === "progress-entry" ? "Entries" : "Videos"
@@ -134,6 +134,54 @@ export default function ShowAllAssets() {
               await fetchNextPage();
             }}
             onEndReachedThreshold={0.3}
+            ListHeaderComponent={() => {
+              return (
+                <View>
+                  <View className="mt-4">
+                    <Text className="text-white text-center text-lg font-semibold">
+                      Progress
+                    </Text>
+                    {/* Progress Entry */}
+                    {/* Progress Video */}
+                    <View className="flex flex-row items-center space-x-2  mx-auto">
+                      <Pressable
+                        onPress={() =>
+                          router.setParams({ type: "progress-entry" })
+                        }
+                      >
+                        <Text
+                          className={`text-4xl font-semibold ${
+                            type === "progress-entry"
+                              ? "text-egoist-white"
+                              : "text-slate-700"
+                          }`}
+                        >
+                          Pictures
+                        </Text>
+                      </Pressable>
+                      <Text className="text-4xl font-semibold text-egoist-white m-1">
+                        /
+                      </Text>
+                      <Pressable
+                        onPress={() =>
+                          router.setParams({ type: "progress-video" })
+                        }
+                      >
+                        <Text
+                          className={`text-4xl font-semibold ${
+                            type === "progress-video"
+                              ? "text-egoist-white"
+                              : "text-slate-700"
+                          }`}
+                        >
+                          Videos
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                </View>
+              );
+            }}
             renderItem={({ item }) => (
               <View className="my-6">
                 <FlatList
@@ -176,7 +224,7 @@ export default function ShowAllAssets() {
 
               return (
                 <View>
-                  <Text className="text-egoist-white text-4xl font-bold">
+                  <Text className="text-egoist-white text-4xl font-bold text-center">
                     {displayDate}
                   </Text>
                 </View>
@@ -185,9 +233,10 @@ export default function ShowAllAssets() {
           />
         )}
         {type === "progress-video" && isProgressVideo(data) && (
-          <View className="space-y-8">
+          <View className="">
             <FlatList
               data={data}
+              showsVerticalScrollIndicator={false}
               numColumns={2}
               onEndReached={async () => {
                 await fetchNextPage();
@@ -196,7 +245,65 @@ export default function ShowAllAssets() {
               ListHeaderComponent={() => {
                 return (
                   <View>
+                    <View>
+                      <View className="mt-4">
+                        <Text className="text-white text-center text-lg font-semibold">
+                          Progress
+                        </Text>
+                        {/* Progress Entry */}
+                        {/* Progress Video */}
+                        <View className="flex flex-row items-center space-x-2  mx-auto">
+                          <Pressable
+                            onPress={() =>
+                              router.setParams({ type: "progress-entry" })
+                            }
+                          >
+                            <Text
+                              className={`text-4xl font-semibold ${
+                                type === "progress-entry"
+                                  ? "text-egoist-white"
+                                  : "text-slate-700"
+                              }`}
+                            >
+                              Pictures
+                            </Text>
+                          </Pressable>
+                          <Text className="text-4xl font-semibold text-egoist-white m-1">
+                            /
+                          </Text>
+                          <Pressable
+                            onPress={() =>
+                              router.setParams({ type: "progress-video" })
+                            }
+                          >
+                            <Text
+                              className={`text-4xl font-semibold ${
+                                type === "progress-video"
+                                  ? "text-egoist-white"
+                                  : "text-slate-700"
+                              }`}
+                            >
+                              Videos
+                            </Text>
+                          </Pressable>
+                        </View>
+                      </View>
+                    </View>
                     <View className="flex flex-row items-center space-x-2">
+                      <Pressable onPress={() => setSelectedFrequency("weekly")}>
+                        <Text
+                          className={`text-4xl font-semibold ${
+                            selectedFrequency === "monthly"
+                              ? "text-slate-700"
+                              : "text-egoist-white"
+                          }`}
+                        >
+                          Weekly
+                        </Text>
+                      </Pressable>
+                      <Text className="text-4xl font-semibold text-egoist-white m-1">
+                        /
+                      </Text>
                       <Pressable
                         onPress={() => setSelectedFrequency("monthly")}
                       >
@@ -210,24 +317,7 @@ export default function ShowAllAssets() {
                           Monthly
                         </Text>
                       </Pressable>
-                      <Text className="text-4xl font-semibold text-egoist-white m-1">
-                        /
-                      </Text>
-                      <Pressable onPress={() => setSelectedFrequency("weekly")}>
-                        <Text
-                          className={`text-4xl font-semibold ${
-                            selectedFrequency === "monthly"
-                              ? "text-slate-700"
-                              : "text-egoist-white"
-                          }`}
-                        >
-                          Weekly
-                        </Text>
-                      </Pressable>
                     </View>
-                    <Text className="text-sm text-center font-semibold text-egoist-white">
-                      Progress Videos
-                    </Text>
                   </View>
                 );
               }}
@@ -235,6 +325,8 @@ export default function ShowAllAssets() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                // padding: 5,
+                // padding: "5px",
               }}
               renderItem={({ item }) => (
                 <VideoPreview
