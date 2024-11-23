@@ -122,14 +122,6 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)/signup" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
-            name="(others)/daily-entry"
-            options={{
-              headerTitle: "",
-              headerTransparent: true,
-              presentation: "containedModal",
-            }}
-          />
-          <Stack.Screen
             name="(others)/paywall"
             options={{
               headerTitle: "",
@@ -144,6 +136,14 @@ export default function RootLayout() {
               headerTransparent: true,
               presentation: "modal",
               headerShown: true,
+            }}
+          />
+          <Stack.Screen
+            name="(others)/how-to"
+            options={{
+              headerTitle: "",
+              headerTransparent: true,
+              presentation: "modal",
             }}
           />
           {/* <Stack.Screen name="+not-found" /> */}
