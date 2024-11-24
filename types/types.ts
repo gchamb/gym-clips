@@ -30,6 +30,7 @@ export type UserData = {
   currentWeight: number;
   goalWeight: number;
   streak: number;
+  inspirationConsent: boolean;
 } | null;
 
 export type AuthSchema = z.infer<typeof authFormSchema>;
