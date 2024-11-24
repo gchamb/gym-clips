@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 
@@ -61,6 +62,22 @@ export default function TabsLayout() {
             );
           },
           unmountOnBlur: true,
+        }}
+      />
+      <Tabs.Screen
+        name="inspiration"
+        options={{
+          headerTitle: "",
+          headerTransparent: true,
+          tabBarIcon: ({ focused }) => {
+            return (
+              <Ionicons
+                name="sparkles-outline"
+                size={28}
+                color={`${focused ? "white" : "#64748b"}`}
+              />
+            );
+          },
         }}
       />
       <Tabs.Screen
