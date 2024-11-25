@@ -59,9 +59,9 @@ export default function Inspiration() {
               INSPIRE
             </Text>
           </View>
-          <Text className="text-2xl text-white text-center">
+          {/* <Text className="text-2xl text-white text-center">
             coming soon....
-          </Text>
+          </Text> */}
         </View>
 
         <View className="space-y-8">
