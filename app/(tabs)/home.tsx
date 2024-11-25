@@ -199,7 +199,7 @@ export default function Home() {
           onComplete={async () => await refetch()}
         />
       )}
-      <View className="w-11/12 mx-auto space-y-8">
+      <View className="w-11/12 mx-auto space-y-6">
         <View className="w-[50px] h-[50px] mx-auto">
           <Image
             source={require("@/assets/images/egoist-logo.png")}
