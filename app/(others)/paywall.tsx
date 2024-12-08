@@ -15,7 +15,22 @@ export default function Paywall() {
   return (
     <View style={{ flex: 1 }}>
       <RevenueCatUI.Paywall
-        options={{ displayCloseButton: true }}
+        options={{
+          displayCloseButton: true,
+          offering: {
+            identifier: "cheaper offering",
+            serverDescription: "",
+            metadata: {},
+            availablePackages: [],
+            lifetime: null,
+            annual: null,
+            sixMonth: null,
+            threeMonth: null,
+            twoMonth: null,
+            monthly: null,
+            weekly: null
+          },
+        }}
         onDismiss={() => {
           if (nextScreen) {
             router.replace(`/${nextScreen}` as Href<string>);
