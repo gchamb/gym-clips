@@ -48,7 +48,11 @@ export default function Home() {
   const authTokens = useAtomValue(authAtom);
   const setMajorInteractions = useSetAtom(majorInteractionsAtom);
 
-  const { isLoading: isAssetLoading, data: assetData } = useQuery({
+  const {
+    isLoading: isAssetLoading,
+    data: assetData,
+    refetch: refetchAssets,
+  } = useQuery({
     queryKey: ["getAssets"],
     queryFn: () =>
       getAssets(authTokens, {
@@ -157,7 +161,6 @@ export default function Home() {
       )}
       {type === "entry-success" && applause && (
         <LottieView
-          key={Math.random()}
           ref={confettiRef}
           source={require("@/assets/other/confetti.json")}
           onLayout={async () => {
@@ -295,6 +298,7 @@ export default function Home() {
                     source={{
                       uri: item.blobKey,
                     }}
+                    onError={() => refetchAssets()}
                     className="w-[80px] h-[80px] rounded-lg"
                   />
                 </Pressable>

@@ -22,7 +22,13 @@ const date = new Date();
 export default function Entry() {
   const { refetch: refetchAssets } = useQuery({
     queryKey: ["getAssets"],
-    queryFn: () => getAssets(authTokens),
+    queryFn: () =>
+      getAssets(authTokens, {
+        take: 6,
+        page: 1,
+        frequency: "monthly",
+        type: ["progress-entry"],
+      }),
     enabled: false,
   });
 
