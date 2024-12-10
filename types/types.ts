@@ -29,6 +29,8 @@ export type AuthTokens = {
 export type UserData = {
   currentWeight: number;
   goalWeight: number;
+  streak: number;
+  inspirationConsent: boolean;
 } | null;
 
 export type AuthSchema = z.infer<typeof authFormSchema>;
@@ -47,4 +49,6 @@ export type PlanSkus = (typeof planSkus)[number];
 export const skusTiers: { [key: string]: string } = {
   egoist_3999_1y_lockedin: "Annual: Locked In Tier",
   egoist_499_1m_lockedin: "Monthly: Locked In Tier",
+  egoist_999_1y_lockedin: "Annual: Locked In Tier",
+  egoist_099_1m_lockedin: "Monthly: Locked In Tier",
 };

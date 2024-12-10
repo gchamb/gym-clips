@@ -1,10 +1,8 @@
-import useUser from "@/hooks/useUser";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { Image, Text, View } from "react-native";
 
 export default function TabsLayout() {
-  const { isLoading, data } = useUser();
   return (
     <Tabs
       screenOptions={{
@@ -31,25 +29,23 @@ export default function TabsLayout() {
               />
             );
           },
-          headerLeft: () => {
+        }}
+      />
+      <Tabs.Screen
+        name="show-all-assets"
+        options={{
+          headerTitle: "",
+          headerTransparent: true,
+          tabBarIcon: ({ focused }) => {
             return (
-              <View className="pl-6">
-                <Image
-                  className="w-[75px] h-[75px]"
-                  source={require("@/assets/images/egoist-letter.png")}
-                />
-              </View>
+              <Feather
+                size={28}
+                name="file"
+                color={`${focused ? "white" : "#64748b"}`}
+              />
             );
           },
-          headerRight: () => {
-            return (
-              <View className="pr-8">
-                <Text className="text-egoist-white text-xl font-bold">
-                  {isLoading ? "Loading..." : `${data?.goalWeight ?? 0} lbs`}
-                </Text>
-              </View>
-            );
-          },
+          unmountOnBlur: true,
         }}
       />
       <Tabs.Screen
@@ -67,6 +63,22 @@ export default function TabsLayout() {
             );
           },
           unmountOnBlur: true,
+        }}
+      />
+      <Tabs.Screen
+        name="inspiration"
+        options={{
+          headerTitle: "",
+          headerTransparent: true,
+          tabBarIcon: ({ focused }) => {
+            return (
+              <Ionicons
+                name="sparkles-outline"
+                size={28}
+                color={`${focused ? "white" : "#64748b"}`}
+              />
+            );
+          },
         }}
       />
       <Tabs.Screen

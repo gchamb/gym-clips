@@ -1,73 +1,89 @@
-import PictureCapture from "@/components/picture-capture";
-import Carousel from "react-native-reanimated-carousel";
-import EgoistView from "@/components/ui/egoist-view";
-import BannerAd from "@/components/ui/banner-ad";
-import VideoPreview from "@/components/video-preview";
+import ChangeGoalWeightModal from "@/components/change-goal-weight-modal";
 import AssetModal from "@/components/show-asset-modal";
+import EgoistBannerAd from "@/components/ui/banner-ad";
+import EgoistView from "@/components/ui/egoist-view";
+import useUser from "@/hooks/useUser";
+import LottieView from "lottie-react-native";
+import * as Notifications from "expo-notifications";
+import NotificationModal from "@/components/notication-modal";
 import useAd from "@/hooks/useAd";
 
-import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import { getAssets } from "@/lib/query-functions";
 import { authAtom } from "@/stores/auth";
+import { majorInteractionsAtom, trackingAtom } from "@/stores/tracking";
+import { ProgressEntry } from "@/types/types";
+import { Feather } from "@expo/vector-icons";
+import { captureException } from "@sentry/react-native";
 import { useQuery } from "@tanstack/react-query";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import { useAtomValue, useSetAtom } from "jotai/react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  Dimensions,
-  ScrollView,
   Text,
   View,
+  Image,
+  Pressable,
+  FlatList,
+  ActivityIndicator,
 } from "react-native";
-import { formatDate } from "@/lib/helpers";
-import { Link } from "expo-router";
-import { ProgressEntry, ProgressVideo } from "@/types";
-import { trackingAtom } from "@/stores/tracking";
-import ErrorScreen from "@/components/error-screen";
-import { captureException } from "@sentry/react-native";
-import { useNotifications } from "@/hooks/expo";
+import { Audio } from "expo-av";
+import { check, PERMISSIONS, RESULTS, request } from "react-native-permissions";
+
+const dummy = new Array(6).fill(null);
 
 export default function Home() {
-  const authTokens = useAtomValue(authAtom);
+  const { type } = useLocalSearchParams<{ type?: string }>();
+
+  const confettiRef = useRef<LottieView>(null);
+  const [selectedAsset, setSelectedAsset] = useState<ProgressEntry | null>(
+    null
+  );
+  const [showGoalWeightModal, setShowGoalWeightModal] = useState(false);
+  const [applause, setApplauseSound] = useState<Audio.Sound | undefined>();
+
+  const [showNotificationModal, setNotificationModal] = useState(false);
+
+  // atoms
   const setTracking = useSetAtom(trackingAtom);
-  const { registerForPushNotificationsAsync } = useNotifications();
+  const authTokens = useAtomValue(authAtom);
+  const setMajorInteractions = useSetAtom(majorInteractionsAtom);
 
-  const { isLoading, data, refetch, error } = useQuery({
+  const {
+    isLoading: isAssetLoading,
+    data: assetData,
+    refetch: refetchAssets,
+  } = useQuery({
     queryKey: ["getAssets"],
-    queryFn: () => getAssets(authTokens),
+    queryFn: () =>
+      getAssets(authTokens, {
+        type: ["progress-entry"],
+        take: 6,
+        page: 1,
+        frequency: "monthly",
+      }),
   });
-  const [showVideoPreview, setShowVideoPreview] =
-    useState<ProgressVideo | null>(null);
-
+  const { data, isLoading, refetch } = useUser();
   const { isTimeToShowAd, isReady, showAd, isShowing } = useAd();
 
-  // derived and not that compute intensive (max 5 entries) so a rerender is on this fine
-  const getTodaysEntryIndex = data?.entries.findIndex((entry, idx) => {
-    return (
-      entry.createdAt.split("T")[0] === new Date().toLocaleDateString("en-CA")
-    );
-  });
-
-  const carouselData = useCallback((): ProgressEntry[] => {
-    if (data === undefined) {
-      return [];
+  const picAssets = useMemo(() => {
+    if (assetData?.entries === undefined) {
+      return;
     }
 
-    if (getTodaysEntryIndex === undefined || getTodaysEntryIndex === -1) {
-      return [
-        ...data.entries,
-        {
-          id: "placeholder",
-          blobKey: "placeholder",
-          createdAt: "placeholder",
-          currentWeight: 0,
-        },
-      ];
-    }
-    return data.entries;
-  }, [data?.entries, getTodaysEntryIndex]);
+    const result = [];
 
-  const checkForPermissions = async () => {
+    for (let i = 0; i < 6; i++) {
+      if (i >= assetData.entries.length) {
+        result.push(null);
+      } else {
+        result.push(assetData.entries[i]);
+      }
+    }
+    refetch();
+    return result;
+  }, [assetData?.entries]);
+
+  const checkForTrackingPermissions = async () => {
     try {
       // tracking
       const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
@@ -86,15 +102,35 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    const onInit = async () => {
-      await checkForPermissions();
-      // notifications
-      await registerForPushNotificationsAsync();
-    };
+  const checkForNotificationPermissions = async () => {
+    try {
+      const currentPermissions = await Notifications.getPermissionsAsync();
 
-    onInit();
-  }, []);
+      if (currentPermissions.granted) {
+        return;
+      }
+
+      if (currentPermissions.canAskAgain) {
+        setNotificationModal(true);
+      }
+    } catch (err) {
+      captureException(err);
+    }
+  };
+
+  const preloadSounds = async () => {
+    try {
+      const applause = require("@/assets/other/applause.mp3");
+
+      const { sound } = await Audio.Sound.createAsync(applause);
+
+      await sound.setVolumeAsync(0.5);
+
+      setApplauseSound(sound);
+    } catch (err) {
+      captureException(err);
+    }
+  };
 
   useEffect(() => {
     const timeToShowAd = async () => {
@@ -108,125 +144,179 @@ export default function Home() {
     timeToShowAd();
   }, [isReady, isTimeToShowAd]);
 
-  if (error) {
-    return (
-      <ErrorScreen
-        error={
-          error instanceof Error ? error.message : "Unable to fetch assets."
-        }
-        refetch={refetch}
-      />
-    );
-  }
+  useEffect(() => {
+    const onInit = async () => {
+      preloadSounds(); // preload in background
+      await checkForTrackingPermissions();
+      await checkForNotificationPermissions();
+    };
+
+    onInit();
+  }, []);
 
   return (
-    <EgoistView className="relative">
-      {showVideoPreview !== null && (
-        <AssetModal
-          assetType="video"
-          asset={showVideoPreview}
-          onPress={() => setShowVideoPreview(null)}
+    <EgoistView>
+      {showNotificationModal && (
+        <NotificationModal onClose={() => setNotificationModal(false)} />
+      )}
+      {type === "entry-success" && applause && (
+        <LottieView
+          ref={confettiRef}
+          source={require("@/assets/other/confetti.json")}
+          onLayout={async () => {
+            await applause.playFromPositionAsync(0);
+            console.log("SHOULD BE PLAYING");
+            const timeout = setTimeout(async () => {
+              await applause.stopAsync();
+              clearTimeout(timeout);
+            }, 2500);
+          }}
+          onAnimationFinish={() => {
+            router.setParams({
+              type: undefined,
+            });
+          }}
+          autoPlay
+          loop={false}
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            left: 0,
+            bottom: 0,
+            pointerEvents: "none",
+          }}
+          resizeMode="cover"
         />
       )}
-      <View className="flex-1 mt-10 space-y-8">
-        <View className="space-y-4">
-          <View>
-            <Text className="text-egoist-white text-lg text-center">
-              Daily Progress
+      {selectedAsset !== null && (
+        <AssetModal
+          assetType="image"
+          asset={selectedAsset}
+          onPress={() => setSelectedAsset(null)}
+        />
+      )}
+      {showGoalWeightModal && (
+        <ChangeGoalWeightModal
+          onClose={() => setShowGoalWeightModal(false)}
+          onComplete={async () => await refetch()}
+        />
+      )}
+      <View className="w-11/12 mx-auto space-y-6">
+        <View className="w-[50px] h-[50px] mx-auto">
+          <Image
+            source={require("@/assets/images/egoist-logo.png")}
+            className="w-full h-full"
+          />
+        </View>
+        {/* Weights */}
+        <View className="flex flex-row items-center justify-center space-x-4 m-2">
+          <Pressable
+            className="relative bg-egoist-red w-1/2  rounded-2xl p-2 space-y-4 justify-center active:scale-95"
+            onPress={() => router.push("/(tabs)/entry")}
+          >
+            <View className="absolute right-4 top-2">
+              <Feather name="edit-2" color="white" size={20} />
+            </View>
+            <Text className="text-center text-white">Current Weight</Text>
+            {isLoading && (
+              <View className="flex items-center justify-center h-12">
+                <ActivityIndicator />
+              </View>
+            )}
+            <Text className="text-center text-white text-7xl font-bold">
+              {!isLoading && data === undefined && 0}
+              {!isLoading && data && data.currentWeight}
             </Text>
-            <Link
-              href="/(others)/show-all-assets?type=progress-entry"
-              className="text-egoist-red text-sm text-center"
-            >
-              Show All
-            </Link>
-          </View>
+            <Text className="text-center text-white text-xl font-bold">
+              lbs
+            </Text>
+          </Pressable>
 
-          <View className="h-[300px] w-[200px] mx-auto flex justify-center items-center">
-            {isLoading && <PictureCapture showOnlySkeleton />}
-            {!isLoading && data?.entries.length === 0 && (
-              <PictureCapture openDailyEntry />
+          <Pressable
+            className="relative bg-egoist-red w-1/2  rounded-2xl p-2 space-y-4 justify-center active:scale-95"
+            onPress={() => setShowGoalWeightModal(true)}
+          >
+            <View className="absolute right-4 top-2">
+              <Feather name="edit-2" color="white" size={20} />
+            </View>
+            <Text className="text-center text-white">Goal Weight</Text>
+            {isLoading && (
+              <View className="flex items-center justify-center h-12">
+                <ActivityIndicator />
+              </View>
             )}
-            {data !== undefined && data.entries.length > 0 && (
-              <Carousel
-                width={Dimensions.get("screen").width}
-                height={300}
-                defaultIndex={
-                  getTodaysEntryIndex === -1 ||
-                  getTodaysEntryIndex === undefined
-                    ? carouselData().length - 1
-                    : getTodaysEntryIndex
-                }
-                data={carouselData()}
-                scrollAnimationDuration={1000}
-                renderItem={({ item }) => {
-                  if (item.id === "placeholder") {
-                    return <PictureCapture openDailyEntry />;
-                  }
-
-                  return (
-                    <View className="space-y-4 h-full">
-                      <Text className="text-white font-semibold text-lg text-center">
-                        {formatDate(item.createdAt)}
-                      </Text>
-                      <View>
-                        <PictureCapture default={item.blobKey} />
-                      </View>
-                    </View>
-                  );
-                }}
-              />
-            )}
-          </View>
+            <Text className="text-center text-white text-7xl font-bold">
+              {!isLoading && data === undefined && 0}
+              {!isLoading && data && data.goalWeight}
+            </Text>
+            <Text className="text-center text-white text-xl font-bold">
+              lbs
+            </Text>
+          </Pressable>
+        </View>
+        {/* Daily Streak */}
+        <View>
+          <Text className="text-7xl font-semibold text-white text-center">
+            {data?.streak ?? 0}
+          </Text>
+          <Text className="text-xl font-semibold text-white text-center">
+            days in the gym
+          </Text>
         </View>
 
-        <View>
-          <Text className="text-egoist-white text-lg text-center">
-            Progress Videos
-          </Text>
-          <Link
-            href="/(others)/show-all-assets?type=progress-video"
-            className="text-egoist-red text-sm text-center"
-          >
-            Show All
-          </Link>
+        <View className="mx-auto space-y-4">
+          <FlatList
+            data={isAssetLoading || !data ? dummy : picAssets}
+            scrollEnabled={false}
+            numColumns={3}
+            renderItem={({ item }) => {
+              if (item === null) {
+                return (
+                  <View className="w-[80px] h-[80px] m-1 border border-egoist-red rounded-lg flex items-center justify-center">
+                    <View className="w-[50px] h-[50px] mx-auto">
+                      <Image
+                        source={require("@/assets/images/egoist-logo.png")}
+                        className="w-full h-full"
+                      />
+                    </View>
+                  </View>
+                );
+              }
 
-          {isLoading || data === undefined ? (
-            <View className="items-center justify-center h-[175px]">
-              <ActivityIndicator />
-            </View>
-          ) : (
-            <>
-              {data.videos.length > 0 ? (
-                <ScrollView
-                  horizontal
-                  contentContainerStyle={{ marginTop: 10 }}
-                  showsHorizontalScrollIndicator={false}
+              return (
+                <Pressable
+                  className="p-1"
+                  onPress={() => {
+                    setMajorInteractions(async (prev) => {
+                      return (await prev) + 1;
+                    });
+                    setSelectedAsset(item);
+                  }}
                 >
-                  {data?.videos.map((item) => (
-                    <VideoPreview
-                      key={item.id}
-                      item={item}
-                      color="white"
-                      onPress={() => {
-                        setShowVideoPreview(item);
-                      }}
-                    />
-                  ))}
-                </ScrollView>
-              ) : (
-                <View className="h-[175px] items-center justify-center">
-                  <Text className="text-2xl text-white font-semibold">
-                    No Progress Videos Yet!
-                  </Text>
-                </View>
-              )}
-            </>
+                  <Image
+                    source={{
+                      uri: item.blobKey,
+                    }}
+                    onError={() => refetchAssets()}
+                    className="w-[80px] h-[80px] rounded-lg"
+                  />
+                </Pressable>
+              );
+            }}
+          />
+
+          {assetData && assetData.entries.length > 0 && (
+            <Link
+              href="/show-all-assets?type=progress-entry"
+              className="text-white text-xl text-center underline"
+            >
+              View All
+            </Link>
           )}
         </View>
       </View>
-
-      <BannerAd />
+      <EgoistBannerAd />
     </EgoistView>
   );
 }

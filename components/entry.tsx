@@ -6,9 +6,9 @@ import BannerAd from "@/components/ui/banner-ad";
 import sanitizedConfig from "@/config";
 import EgoistCamera from "./camera";
 import { getAndUploadImage, Months, weights } from "@/lib/helpers";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useAtomValue, useSetAtom } from "jotai/react";
 import { authAtom } from "@/stores/auth";
 import { majorInteractionsAtom } from "@/stores/tracking";
@@ -19,10 +19,16 @@ import { CameraCapturedPicture } from "expo-camera";
 
 const date = new Date();
 
-export default function Entry(props: { presentation: "screen" | "modal" }) {
+export default function Entry() {
   const { refetch: refetchAssets } = useQuery({
     queryKey: ["getAssets"],
-    queryFn: () => getAssets(authTokens),
+    queryFn: () =>
+      getAssets(authTokens, {
+        take: 6,
+        page: 1,
+        frequency: "monthly",
+        type: ["progress-entry"],
+      }),
     enabled: false,
   });
 
@@ -73,6 +79,7 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
 
       if (!addEntryRes.ok) {
         setError("Unable to add entry. Try again.");
+        return;
       }
 
       trackEvent("entry");
@@ -82,7 +89,7 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
       if (router.canDismiss()) {
         router.dismiss();
       } else {
-        router.replace("/home");
+        router.replace("/home?type=entry-success");
       }
     } catch (err) {
       setError(
@@ -99,7 +106,7 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
   if (showCamera) {
     return (
       <EgoistCamera
-        presentation={props.presentation}
+        presentation="screen"
         onClose={() => setShowCamera(false)}
         liftImage={(image) => setImage(image)}
       />
@@ -108,12 +115,8 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
 
   return (
     <EgoistView>
-      <View
-        className={`w-11/12 mx-auto space-y-8 ${
-          props.presentation === "screen" ? "mt-0" : "mt-[-40px]"
-        }`}
-      >
-        <View className="space-y-2">
+      <View className={`w-11/12 mx-auto space-y-8 mt-0`}>
+        <View className="relative space-y-2">
           <Text className="text-egoist-white text-2xl text-center font-semibold">
             Daily Entry
           </Text>
@@ -158,20 +161,11 @@ export default function Entry(props: { presentation: "screen" | "modal" }) {
             disabled={loading}
             isLoading={loading}
           />
-          {props.presentation === "modal" && (
-            <Button
-              className="p-4"
-              text="Cancel"
-              disabled={loading}
-              onPress={() => {
-                if (router.canDismiss()) {
-                  router.dismiss();
-                } else {
-                  router.replace("/home");
-                }
-              }}
-            />
-          )}
+          <Pressable className="active:scale-95">
+            <Link href="/how-to" className="text-center text-white underline">
+              How to submit?
+            </Link>
+          </Pressable>
         </View>
       </View>
 
