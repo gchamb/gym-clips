@@ -16,7 +16,7 @@ export default function Paywall() {
     <View style={{ flex: 1 }}>
       <RevenueCatUI.Paywall
         options={{
-          displayCloseButton: true,
+          displayCloseButton: false,
           offering: {
             identifier: "cheaper offering",
             serverDescription: "",
@@ -28,7 +28,7 @@ export default function Paywall() {
             threeMonth: null,
             twoMonth: null,
             monthly: null,
-            weekly: null
+            weekly: null,
           },
         }}
         onDismiss={() => {
