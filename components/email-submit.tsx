@@ -56,7 +56,7 @@ export default function EmailSubmit(props: EmailSubmitProps) {
 
       setAuthTokens(authRes);
 
-      await Purchases.logIn(authRes.uid);
+      const purchase = await Purchases.logIn(authRes.uid);
 
       const eventName = props.type
         .split(" ")
@@ -65,7 +65,11 @@ export default function EmailSubmit(props: EmailSubmitProps) {
 
       trackEvent(eventName, { method: "email" });
 
-      router.replace("/paywall?nextScreen=home");
+      if (purchase.customerInfo.activeSubscriptions.length > 0) {
+        router.replace("/home");
+      } else {
+        router.replace("/paywall?nextScreen=home&displayCloseButton=false");
+      }
     } catch (err) {
       setError("root", {
         message: err instanceof Error ? err.message : String(err),

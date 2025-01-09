@@ -8,7 +8,6 @@ import useUser from "@/hooks/useUser";
 import BannerAd from "@/components/ui/banner-ad";
 import ChangeGoalWeightModal from "@/components/change-goal-weight-modal";
 
-
 import { Feather } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
@@ -197,7 +196,9 @@ export default function Settings() {
                   <Button
                     className="p-2"
                     text="Get Started"
-                    onPress={() => router.push("/(others)/paywall?displayCloseButton=true")}
+                    onPress={() =>
+                      router.push("/(others)/paywall?displayCloseButton=true")
+                    }
                   />
                 </View>
               </View>
