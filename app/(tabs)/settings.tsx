@@ -197,7 +197,7 @@ export default function Settings() {
                   <Button
                     className="p-2"
                     text="Get Started"
-                    onPress={() => router.push("/(others)/paywall")}
+                    onPress={() => router.push("/(others)/paywall?displayCloseButton=true")}
                   />
                 </View>
               </View>

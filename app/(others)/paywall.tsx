@@ -6,8 +6,11 @@ import { trackEvent } from "@aptabase/react-native";
 import { captureException } from "@sentry/react-native";
 
 export default function Paywall() {
-  const { nextScreen } = useLocalSearchParams<{ nextScreen?: string }>();
-
+  const { nextScreen, displayCloseButton } = useLocalSearchParams<{
+    nextScreen?: string;
+    displayCloseButton?: string;
+  }>();
+  console.log(displayCloseButton)
   useEffect(() => {
     trackEvent("paywall_shown");
   }, []);
@@ -16,7 +19,7 @@ export default function Paywall() {
     <View style={{ flex: 1 }}>
       <RevenueCatUI.Paywall
         options={{
-          displayCloseButton: false,
+          displayCloseButton: displayCloseButton === "true" ? true : false,
           offering: {
             identifier: "cheaper offering",
             serverDescription: "",
