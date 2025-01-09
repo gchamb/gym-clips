@@ -66,11 +66,15 @@ export default function SignIn() {
 
       setAuthTokens(authRes);
 
-      await Purchases.logIn(authRes.uid);
+      const purchase = await Purchases.logIn(authRes.uid);
 
       trackEvent("sign_in", { method: "google" });
 
-      router.replace("/paywall?nextScreen=home");
+      if (purchase.customerInfo.activeSubscriptions.length > 0) {
+        router.replace("/home");
+      } else {
+        router.replace("/paywall?nextScreen=home&displayCloseButton=false");
+      }
     } catch (err) {
       Sentry.captureException(err);
     }
@@ -109,11 +113,15 @@ export default function SignIn() {
 
       setAuthTokens(authRes);
 
-      await Purchases.logIn(authRes.uid);
+      const purchase = await Purchases.logIn(authRes.uid);
 
       trackEvent("sign_in", { method: "apple" });
 
-      router.replace("/paywall?nextScreen=home");
+      if (purchase.customerInfo.activeSubscriptions.length > 0) {
+        router.replace("/home");
+      } else {
+        router.replace("/paywall?nextScreen=home&displayCloseButton=false");
+      }
     } catch (err) {
       Sentry.captureException(err);
     }
