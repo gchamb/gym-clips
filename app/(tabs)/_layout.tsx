@@ -1,8 +1,21 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import { Feather } from "@expo/vector-icons";
+import { useAsyncStorage } from "@react-native-async-storage/async-storage";
+import { useEffect } from "react";
 
 export default function TabsLayout() {
+  const item = useAsyncStorage("seen_paywall");
+
+  useEffect(() => {
+    const checkPaywall = async () => {
+      const seenPaywall = await item.getItem();
+      if (seenPaywall === "true") {
+        router.replace("/paywall?nextScreen=home&displayCloseButton=false");
+      }
+    };
+    checkPaywall();
+  }, []);
   return (
     <Tabs
       screenOptions={{

@@ -12,6 +12,7 @@ import { authAtom } from "@/stores/auth";
 import { useSetAtom } from "jotai/react";
 import { useState } from "react";
 import { trackEvent } from "@aptabase/react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type EmailSubmitProps = {
   type: "Sign in" | "Sign up";
@@ -68,6 +69,7 @@ export default function EmailSubmit(props: EmailSubmitProps) {
       if (purchase.customerInfo.activeSubscriptions.length > 0) {
         router.replace("/home");
       } else {
+        await AsyncStorage.setItem("seen_paywall", "true");
         router.replace("/paywall?nextScreen=home&displayCloseButton=false");
       }
     } catch (err) {
