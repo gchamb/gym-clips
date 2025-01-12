@@ -9,7 +9,6 @@ import sanitizedConfig from "@/config";
 import Purchases from "react-native-purchases";
 import { useState } from "react";
 import {
-  Dimensions,
   Image,
   KeyboardAvoidingView,
   Text,
@@ -21,7 +20,6 @@ import { authAtom } from "@/stores/auth";
 import { router } from "expo-router";
 import { AuthTokens } from "@/types";
 import { trackEvent } from "@aptabase/react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 GoogleSignin.configure({
   webClientId:
@@ -74,7 +72,6 @@ export default function SignIn() {
       if (purchase.customerInfo.activeSubscriptions.length > 0) {
         router.replace("/home");
       } else {
-        await AsyncStorage.setItem("seen_paywall", "true");
         router.replace("/paywall?nextScreen=home&displayCloseButton=false");
       }
     } catch (err) {
@@ -122,7 +119,6 @@ export default function SignIn() {
       if (purchase.customerInfo.activeSubscriptions.length > 0) {
         router.replace("/home");
       } else {
-        await AsyncStorage.setItem("seen_paywall", "true");
         router.replace("/paywall?nextScreen=home&displayCloseButton=false");
       }
     } catch (err) {
