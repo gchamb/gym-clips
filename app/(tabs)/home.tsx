@@ -1,6 +1,5 @@
 import ChangeGoalWeightModal from "@/components/change-goal-weight-modal";
 import AssetModal from "@/components/show-asset-modal";
-import EgoistBannerAd from "@/components/ui/banner-ad";
 import EgoistView from "@/components/ui/egoist-view";
 import useUser from "@/hooks/useUser";
 import LottieView from "lottie-react-native";
@@ -316,7 +315,6 @@ export default function Home() {
           )}
         </View>
       </View>
-      <EgoistBannerAd />
     </EgoistView>
   );
 }

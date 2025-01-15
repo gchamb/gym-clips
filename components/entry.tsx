@@ -2,7 +2,6 @@ import PictureCapture from "@/components/picture-capture";
 import Button from "@/components/ui/button";
 import Dropdown from "@/components/ui/dropdown";
 import EgoistView from "@/components/ui/egoist-view";
-import BannerAd from "@/components/ui/banner-ad";
 import sanitizedConfig from "@/config";
 import EgoistCamera from "./camera";
 import { getAndUploadImage, Months, weights } from "@/lib/helpers";
@@ -169,7 +168,6 @@ export default function Entry() {
         </View>
       </View>
 
-      <BannerAd />
     </EgoistView>
   );
 }
