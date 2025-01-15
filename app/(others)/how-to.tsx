@@ -1,4 +1,3 @@
-import BannerAd from "@/components/ui/banner-ad";
 import EgoistView from "@/components/ui/egoist-view";
 import { Feather } from "@expo/vector-icons";
 import { View, Text, Image } from "react-native";
@@ -63,7 +62,6 @@ export default function Howto() {
           </View>
         </View>
       </View>
-      <BannerAd />
     </EgoistView>
   );
 }
