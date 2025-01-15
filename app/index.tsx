@@ -1,12 +1,11 @@
 import EgoistView from "@/components/ui/egoist-view";
 import React from "react";
 import SignIn from "@/components/sign-in";
-import DontSupport from "@/components/dont-support";
 
 import { authAtom } from "@/stores/auth";
-import { Redirect, router } from "expo-router";
+import { Redirect } from "expo-router";
 import { useAtomValue } from "jotai/react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   View,
   Image,
@@ -18,7 +17,9 @@ import {
 import { trackEvent } from "@aptabase/react-native";
 import PictureCaptureUI from "@/components/ui/picture-capture-ui";
 import { SlidingDot } from "react-native-animated-pagination-dots";
+import { Platform, PlatformIOSStatic } from "react-native";
 
+const platform = Platform as PlatformIOSStatic;
 
 const introduction = [
   {
@@ -44,7 +45,6 @@ const introduction = [
 export default function LandingPage() {
   const authTokens = useAtomValue(authAtom);
   const width = Dimensions.get("screen").width;
-  const height = Dimensions.get("screen").height;
 
   const scrollX = React.useRef(new Animated.Value(0)).current;
 
@@ -55,14 +55,6 @@ export default function LandingPage() {
   if (authTokens) {
     return <Redirect href="/(tabs)/home" />;
   }
-  // if (authTokens?.is_onboarded === false) {
-  //   return <Redirect href="/(auth)/onboarding" />;
-  // }
-
-  if (height < 800){
-    return <DontSupport />
-  }
-
   return (
     <EgoistView className="">
       <FlatList
@@ -123,13 +115,15 @@ export default function LandingPage() {
         }}
       />
 
-      <SlidingDot
-        marginHorizontal={3}
-        slidingIndicatorStyle={{ backgroundColor: "white" }}
-        data={introduction}
-        scrollX={scrollX}
-        dotSize={10}
-      />
+      {platform.constants.systemName !== "iPadOS" &&    
+        <SlidingDot
+          marginHorizontal={3}
+          slidingIndicatorStyle={{ backgroundColor: "white" }}
+          data={introduction}
+          scrollX={scrollX}
+          dotSize={10}
+        />
+      }
     </EgoistView>
   );
 }
