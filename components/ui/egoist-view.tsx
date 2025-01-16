@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { SafeAreaView, ScrollView } from "react-native";
 import { usePathname } from "expo-router";
 
-const excludePaths = ["/show-all-assets", "/"]
+const excludePaths = ["/show-all-assets", "/", "/entry"]
 
 export default function EgoistView(props: {
   children: ReactNode;
