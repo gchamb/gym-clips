@@ -9,7 +9,6 @@ import sanitizedConfig from "@/config";
 import Purchases from "react-native-purchases";
 import { useState } from "react";
 import {
-  Dimensions,
   Image,
   KeyboardAvoidingView,
   Text,

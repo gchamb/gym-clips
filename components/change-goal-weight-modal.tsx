@@ -73,7 +73,7 @@ export default function ChangeGoalWeightModal(props: {
   return (
     <Modal transparent animationType="fade">
       <BlurView className="flex-1">
-        <View className="bg-egoist-black w-11/12 h-1/3 m-auto rounded-2xl drop-shadow-2xl p-2 flex justify-evenly space-y-4">
+        <View className="bg-egoist-black w-11/12 h-1/2 m-auto rounded-2xl drop-shadow-2xl p-2 flex justify-evenly space-y-4">
           <Text className="text-egoist-white text-3xl font-semibold text-center">
             Goal Weight Change
           </Text>
